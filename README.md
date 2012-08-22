@@ -8,7 +8,6 @@ Setup:
 1. Create a file named colorConverter.js in the root directory and copy the JavaScript function hsvToRgb(h, s, v) from http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript into that file.
 
 2. Create a MySQL database with two tables using the following SQL code:
-
 CREATE TABLE IF NOT EXISTS `Context` (
   `responseId` int(10) unsigned NOT NULL,
   `isAgree` int(10) unsigned NOT NULL,
