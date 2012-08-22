@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS `Context` (
   `parentId` int(10) unsigned NOT NULL,
   PRIMARY KEY (`responseId`,`isAgree`,`parentId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 CREATE TABLE IF NOT EXISTS `Responses` (
   `responseId` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `responseText` varchar(1000) NOT NULL,
