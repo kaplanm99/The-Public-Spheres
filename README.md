@@ -21,3 +21,5 @@ CREATE TABLE IF NOT EXISTS `Responses` (
   `responseText` varchar(1000) NOT NULL,
   PRIMARY KEY (`responseId`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=46 ;
+
+3. Create a folder in the root directory titled db and create a file in it titled config.php. Set the folder's permissions only allow owner and group read access and disable all other permissions. In config.php, create a php block that sets the following variables: $host, $username , $password, $db to the values corresponding to your MySQL database.
