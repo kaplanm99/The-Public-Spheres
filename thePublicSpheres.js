@@ -13,6 +13,14 @@ function goToRID(el, event, rID, aIDs) {
 	}        
 }
 
+function forkHighlight(el) {
+	el.src = "forkHighlighted.png";
+}
+
+function forkUnhighlight(el) {
+	el.src = "fork.png";
+}
+
 function changeBGC(el, ratio, typeIsAgree) {
 	var hue; 
 	var maxSat; 
@@ -68,4 +76,29 @@ $(document).ready(function(){
 	 $("#rIsAgree").attr("value",3);
 	 $("#responseForm").submit();
    });
+   
+   var circleHeight = 760;
+   var statementHeights = new Array();
+   
+   $(".statement").each(function (index, domEle) {
+        statementHeights[index] = $(domEle).height() + 9;
+	});
+   
+   $(".circle").each(function (index, domEle) {
+        if(index != 0) {
+			circleHeight -= statementHeights[index-1]; 
+			$(domEle).height(circleHeight);
+		} else {
+			$(domEle).height(circleHeight);
+		}
+	});
+	
+	$(".circleResponses").each(function (index, domEle) {
+        $(domEle).height($(domEle).parent().height() - statementHeights[index]);
+	});
+
+	$(".responseP").each(function (index, domEle) {
+        $(domEle).width($(domEle).parent().width()-52);
+	});
+	
  });

@@ -1,6 +1,13 @@
 /* Copyright (c) 2012 Michael Andrew Kaplan
  * See the file license.txt for copying permission. */
 
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+
+@import "compass/reset";
+
 body {
 	font-family: Arial;
 	margin:0px; 
@@ -29,14 +36,14 @@ body {
 
 .AgreeLabel {
 	position: absolute;
-	top: -25px;
+	top: -10px;
 	left: 25px;
 	background-color: #F7F7F7;
 }
 
 .DisagreeLabel {
 	position: absolute;
-	top: -25px;
+	top: -10px;
 	right: 25px;
 	background-color: #F7F7F7;
 }
@@ -57,7 +64,7 @@ body {
 	margin-right: auto;
 }
 
-.categoriesTitle {
+.CategoriesTitle {
 	background-color:#99B6EA;
 	text-align:center;
 	font-weight:normal;
@@ -100,11 +107,11 @@ body {
 	background-color:#b6d7a8;
 }	
 
-.categoriesCircleColumn{
+.CategoriesCircleColumn{
 	float:left;
 }
 
-.categoriesCircleColumn div div {
+.CategoriesCircleColumn div div {
 	background-color:#99B6EA;
 }
 
@@ -136,7 +143,7 @@ body {
 
 .dividingLine {
 	float:left;
-	background-image:url('dash.png');
+	background-image:url('../../dash.png');
 }
 
 .textbox {
@@ -222,14 +229,14 @@ Sizes
 
 #mainCircleSize {
 	width: 1010px;
-	height:750px;
+	height:760px;
 	margin-left:auto;
 	margin-right:auto;
 }
 
 .circleSize {
 	width:98%;
-	height:94%;
+	/*height:94%;*/
 }
 
 .statementSize {
@@ -261,11 +268,14 @@ Sizes
 
 .circleColumnSize {
 	width: 48%;
+	height: 69%;
 }
 
+
 .responsesSize {
-	height:69%;
+	height:100%;
 }
+
 
 .dividingLineSize {
 	width:4px;

@@ -1,7 +1,7 @@
 <?php
 /* Copyright (c) 2012 Michael Andrew Kaplan
  * See the file license.txt for copying permission. */
-
+ 
 if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"])) {    
     $rText = strip_tags($_POST["rText"]);
     $rText = trim($rText);
@@ -178,11 +178,11 @@ function outputResponses($type, $typeIsAgree, $respID, $aIds) {
         // fetch values
         while ($stmt->fetch()) {
             if($respID == 0) {
-                print("<p id=\"$responseID\" onclick=\"goToRID(this, event, $responseID ,'&aIds[]=0');\">$responseText id_$responseID</p>");
+                print("<div id=\"$responseID\" onclick=\"goToRID(this, event, $responseID ,'&aIds[]=0');\"><p class=\"responseP\" onclick=\"goToRID(this, event, $responseID ,'&aIds[]=0');\" style=\"width: 88%;float: left;padding:5px\">$responseText</p><p style=\"float: left; width: 40px;height:35px;line-height:12px;\"><img src=\"fork.png\" onmouseover=\"forkHighlight(this);\" onmouseout=\"forkUnhighlight(this);\" onclick=\"showTop($responseID);return false;\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
             } else {
-                print("<p id=\"$responseID\" onclick=\"goToRID(this, event, $responseID ,'".arrayPHPToJS($aIds,$respID)."');\">$responseText id_$responseID</p>");
+                print("<div id=\"$responseID\" onclick=\"goToRID(this, event, $responseID ,'".arrayPHPToJS($aIds,$respID)."');\"><p class=\"responseP\" onclick=\"goToRID(this, event, $responseID ,'".arrayPHPToJS($aIds,$respID)."');\" style=\"width: 88%;float: left;padding:5px\">$responseText</p><p style=\"float: left; width: 40px;height:35px;line-height:12px;\"><img src=\"fork.png\" onmouseover=\"forkHighlight(this);\" onmouseout=\"forkUnhighlight(this);\" onclick=\"showTop($responseID);return false;\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
             }
-        
+            
             if($typeIsAgree == 0 || $typeIsAgree == 1 || $typeIsAgree == 2) {
                 $ratio = agreeDisagreeRatio($responseID);
                 
@@ -310,13 +310,63 @@ function validAncestors($aIds, $rId) {
 
 <html>
 <head> 
-    <link rel="stylesheet" type="text/css" href="style.css" />     
-    <title></title>    
+    <link href="styles/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+    <link href="styles/stylesheets/print.css" media="print" rel="stylesheet" type="text/css" />
+    <!--[if IE]>
+        <link href="styles/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
+    <![endif]-->
+    
+    <title>The Public Spheres</title>    
     <script src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
     <script src="colorConverter.js"></script>
     <script src="thePublicSpheres.js"></script>
+    <script type="text/javascript" language="javascript">
+    //<!--
+    function showTop(responseID)
+    {
+        document.getElementById('centerBoxID').innerHTML = "id_" + responseID;
+        
+        var boxWidth = 500;
+        var boxHeight = 240;
+        
+        var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
+        var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
+
+        var xPos = (screenWidth - boxWidth) * 0.5;
+        var yPos = (screenHeight - boxHeight) * 0.5;
+
+        document.getElementById('centerBox').style.left=xPos+'px';
+        document.getElementById('centerBox').style.top=yPos+'px';
+
+        //Show the background overlay and topbox...
+        document.getElementById('greyOverlay').style.display='block';
+        document.getElementById('centerBox').style.display='block';
+        
+    }
+
+
+    function closeTop()
+    {
+        //Hide the overlay and tobox...
+        document.getElementById('greyOverlay').style.display='none';
+        document.getElementById('centerBox').style.display='none';
+    }
+    //-->
+    </script>
 </head>
 <body>
+
+<div id="greyOverlay" style="display:none;" onClick="closeTop();"> 
+</div>
+
+<div id="centerBox" style="display:none;"> 
+	<h1>Fork</h1>
+    <p>To insert this response as a response to another statement, copy the text below and paste it into the textbox of the statement that you want to include this response as a response to.</p>
+    <p id="centerBoxID">ID will be shown here</p>
+	<p>
+	<a href="#" onclick="closeTop();return false;"><img src="closeButton2.png" id="closeButton" /></a>
+	</p>
+</div>
 
 <?php
 if(isset($_GET["rId"])) {
@@ -351,10 +401,12 @@ if($rId != 0) {
 ?>
 
 <div id="mainCircleSize">
-    <div class="circle circleSize" onclick="goToRID(this, event, 0 ,'');">
-        <h2 class="statement statementSize" onclick="goToRID(this, event, 0, '');">Public Spheres: Ideas Taking Shape</h2>
+    <div class="circle circleSize circle1" onclick="goToRID(this, event, 0 ,'');">
+        <h2 class="statement statementSize" onclick="goToRID(this, event, 0, '');">The Public Spheres: Ideas Taking Shape</h2>
 
     <?php
+        
+    
         $parentsOutputText = ""; 
         $hasParents = true;
         
@@ -444,8 +496,8 @@ if($rId != 0) {
 ?>
 
 <div id="mainCircleSize">
-<div id="innerCircle" class="circle circleSize">
-    <h2 class="statement statementSize">Public Spheres: Ideas Taking Shape</h2>
+<div id="innerCircle" class="circle circleSize circle1">
+    <h2 class="statement statementSize">The Public Spheres: Ideas Taking Shape</h2>
 
     <?php
         outputCategoryContents($rId, array());
