@@ -94,11 +94,19 @@ $(document).ready(function(){
 	});
 	
 	$(".circleResponses").each(function (index, domEle) {
-        $(domEle).height($(domEle).parent().height() - statementHeights[index]);
+        $(domEle).height($(domEle).parent().height() - ($(domEle).parent().children(".statement").height()+9));
 	});
 
 	$(".responseP").each(function (index, domEle) {
         $(domEle).width($(domEle).parent().width()-52);
+	});
+	
+	$(".dividingLineSize").each(function (index, domEle) {
+        $(domEle).height($(domEle).parent().height() - $("#responseForm").height());
+	});
+	
+	$(".circleColumnSize").each(function (index, domEle) {
+        $(domEle).height($(domEle).parent().height() - $("#responseForm").height());
 	});
 	
  });

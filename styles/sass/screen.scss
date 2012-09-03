@@ -7,6 +7,7 @@
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
 
 @import "compass/reset";
+@import "compass/css3/border-radius";
 
 body {
 	font-family: Arial;
@@ -16,7 +17,7 @@ body {
 
 .circle {
 	border:1px solid black;
-	border-radius: 10px;
+	@include border-radius(10px);
 	background-color:#f7f7f7;
 	margin-left:auto;
 	margin-right:auto;
@@ -83,7 +84,7 @@ body {
 .responses  div{
 	
 	border: 1px solid black;
-	border-radius: 10px;
+	@include border-radius(10px);
 	text-align:center;
 	margin-bottom: 0px;
 	margin-top: 10px;
@@ -150,20 +151,19 @@ body {
 	margin-left:auto;
 	margin-right:auto;
 	padding:5px;
-	margin-top:5px;
-	margin-bottom: 0px;
 	clear: both;
 	background-color:#f7f7f7;
-	border-radius: 10px;
+	@include border-radius(10px);
 }
 
 .formButtons {
 	width: 250px;
+	height: 22px;
     margin-left: auto;
 	margin-right: auto;
 	font-size:14px;
 	padding:0px;
-	margin-top:0px;
+	margin-top:5px;
 	margin-bottom: 0px;
 }
 
@@ -172,10 +172,7 @@ body {
 	width:70px;
 	background-color:#b6d7a8;
 	text-align:center;
-	margin-top: 5px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
+	@include border-radius(5px);
 	padding: 2px;
 	border: 2px solid #666;
 	cursor:pointer;
@@ -186,10 +183,7 @@ body {
 	width:70px;
 	background-color:#ea9999;
 	text-align:center;
-	margin-top: 5px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
+	@include border-radius(5px);
 	padding: 2px;
 	border: 2px solid #666;
 	cursor:pointer;
@@ -200,10 +194,7 @@ body {
 	width:70px;
 	background-color:#99B6EA;
 	text-align:center;
-	margin-top: 5px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
+	@include border-radius(5px);
 	padding: 2px;
 	border: 2px solid #666;
 	cursor:pointer;
@@ -214,10 +205,7 @@ body {
 	width:70px;
 	background-color:#EAC799;
 	text-align:center;
-	margin-top: 5px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
+	@include border-radius(5px);
 	padding: 2px;
 	border: 2px solid #666;
 	cursor:pointer;
@@ -255,9 +243,7 @@ Sizes
 	font-size:14px;
 	margin-top:2px;
 	margin-bottom:0px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
+	@include border-radius(5px);
 }
 
 /*
@@ -280,18 +266,24 @@ Sizes
 .dividingLineSize {
 	width:4px;
 	height: 71%;
-	margin-top:2%;
 	margin-left:15px;
 }
 
 .textboxSize {
-	width: 40%;
-	margin-left:30%;
-	height:12%;
+	width: 500px;
+	height:100px;
+}
+
+#responseForm {
+	clear: both;
+	height: 128px;
+	width: 500px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 /*
-	Lightbox
+	Popup
 */
 
 #greyOverlay
