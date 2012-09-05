@@ -13,14 +13,6 @@ function goToRID(el, event, rID, aIDs) {
 	}        
 }
 
-function forkHighlight(el) {
-	el.src = "forkHighlighted.png";
-}
-
-function forkUnhighlight(el) {
-	el.src = "fork.png";
-}
-
 function changeBGC(el, ratio, typeIsAgree) {
 	var hue; 
 	var maxSat; 
@@ -56,10 +48,60 @@ function changeBGC(el, ratio, typeIsAgree) {
 	el.style.backgroundColor = "rgb(" + Math.round(rgbArray[0]) + "," + Math.round(rgbArray[1]) + "," + Math.round(rgbArray[2]) + ")";
 }
 
+function showTop(responseID)
+{
+	document.getElementById('centerBoxID').innerHTML = "id_" + responseID;
+	
+	var boxWidth = 500;
+	var boxHeight = 240;
+	
+	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
+	var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
+
+	var xPos = (screenWidth - boxWidth) * 0.5;
+	var yPos = (screenHeight - boxHeight) * 0.5;
+
+	document.getElementById('centerBox').style.left=xPos+'px';
+	document.getElementById('centerBox').style.top=yPos+'px';
+
+	document.getElementById('greyOverlay').style.display='block';
+	document.getElementById('centerBox').style.display='block';
+}
+
+
+function closeTop()
+{
+	document.getElementById('greyOverlay').style.display='none';
+	document.getElementById('centerBox').style.display='none';
+	document.getElementById('loginRegisterBox').style.display='none';
+}
+
+function showLoginRegister()
+{
+	var boxWidth = 500;
+	var boxHeight = 465;
+	
+	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
+	var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
+
+	var xPos = (screenWidth - boxWidth) * 0.5;
+	var yPos = (screenHeight - boxHeight) * 0.5;
+
+	document.getElementById('loginRegisterBox').style.left=xPos+'px';
+	document.getElementById('loginRegisterBox').style.top=yPos+'px';
+
+	document.getElementById('greyOverlay').style.display='block';
+	document.getElementById('loginRegisterBox').style.display='block';
+}
+
 $(document).ready(function(){
   $("#agreeButton").click(function(event){
 	 $("#rIsAgree").attr("value",1);
 	 $("#responseForm").submit();
+   });
+   
+   $("#logoutLink").click(function(event){
+	 $("#logoutForm").submit();
    });
    
    $("#disagreeButton").click(function(event){
@@ -76,6 +118,19 @@ $(document).ready(function(){
 	 $("#rIsAgree").attr("value",3);
 	 $("#responseForm").submit();
    });
+   
+   $("#greyOverlay").click(closeTop);
+   $(".closeButton").click(closeTop);
+   
+   $(".forkIcon").mouseover(function(){
+	 $(this).attr("src", "forkHighlighted.png");
+   });
+   
+   $(".forkIcon").mouseout(function(){
+	 $(this).attr("src", "fork.png");
+   });
+   
+   $("#loginRegisterLink").click(showLoginRegister);
    
    var circleHeight = 760;
    var statementHeights = new Array();
@@ -109,4 +164,6 @@ $(document).ready(function(){
         $(domEle).height($(domEle).parent().height() - $("#responseForm").height());
 	});
 	
+	
+	$("#mainCircleSize").css("visibility", "visible");
  });

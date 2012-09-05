@@ -1,6 +1,17 @@
-<?php
+<?php session_start();
 /* Copyright (c) 2012 Michael Andrew Kaplan
  * See the file license.txt for copying permission. */
+
+if(isset($_POST["op"]) && $_POST["op"] == "logout") {
+    unset($_SESSION['user']);
+}
+
+ 
+require('user-man.php'); 
+
+$manage_user_result = manage_user();
+
+//print($manage_user_result);
  
 if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"])) {    
     $rText = strip_tags($_POST["rText"]);
@@ -178,9 +189,9 @@ function outputResponses($type, $typeIsAgree, $respID, $aIds) {
         // fetch values
         while ($stmt->fetch()) {
             if($respID == 0) {
-                print("<div id=\"$responseID\" onclick=\"goToRID(this, event, $responseID ,'&aIds[]=0');\"><p class=\"responseP\" onclick=\"goToRID(this, event, $responseID ,'&aIds[]=0');\" style=\"width: 88%;float: left;padding:5px\">$responseText</p><p style=\"float: left; width: 40px;height:35px;line-height:12px;\"><img src=\"fork.png\" onmouseover=\"forkHighlight(this);\" onmouseout=\"forkUnhighlight(this);\" onclick=\"showTop($responseID);return false;\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
+                print("<div id=\"$responseID\" onclick=\"goToRID(this, event, $responseID ,'&aIds[]=0');\"><p class=\"responseP\" onclick=\"goToRID(this, event, $responseID ,'&aIds[]=0');\" style=\"float: left;padding:5px\">$responseText</p><p style=\"float: left; width: 40px;height:35px;line-height:12px;\"><img class=\"forkIcon\" src=\"fork.png\" onclick=\"showTop($responseID);return false;\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
             } else {
-                print("<div id=\"$responseID\" onclick=\"goToRID(this, event, $responseID ,'".arrayPHPToJS($aIds,$respID)."');\"><p class=\"responseP\" onclick=\"goToRID(this, event, $responseID ,'".arrayPHPToJS($aIds,$respID)."');\" style=\"width: 88%;float: left;padding:5px\">$responseText</p><p style=\"float: left; width: 40px;height:35px;line-height:12px;\"><img src=\"fork.png\" onmouseover=\"forkHighlight(this);\" onmouseout=\"forkUnhighlight(this);\" onclick=\"showTop($responseID);return false;\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
+                print("<div id=\"$responseID\" onclick=\"goToRID(this, event, $responseID ,'".arrayPHPToJS($aIds,$respID)."');\"><p class=\"responseP\" onclick=\"goToRID(this, event, $responseID ,'".arrayPHPToJS($aIds,$respID)."');\" style=\"float: left;padding:5px\">$responseText</p><p style=\"float: left; width: 40px;height:35px;line-height:12px;\"><img class=\"forkIcon\" src=\"fork.png\" onclick=\"showTop($responseID);return false;\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
             }
             
             if($typeIsAgree == 0 || $typeIsAgree == 1 || $typeIsAgree == 2) {
@@ -320,52 +331,69 @@ function validAncestors($aIds, $rId) {
     <script src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
     <script src="colorConverter.js"></script>
     <script src="thePublicSpheres.js"></script>
-    <script type="text/javascript" language="javascript">
-    //<!--
-    function showTop(responseID)
-    {
-        document.getElementById('centerBoxID').innerHTML = "id_" + responseID;
-        
-        var boxWidth = 500;
-        var boxHeight = 240;
-        
-        var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
-        var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
-
-        var xPos = (screenWidth - boxWidth) * 0.5;
-        var yPos = (screenHeight - boxHeight) * 0.5;
-
-        document.getElementById('centerBox').style.left=xPos+'px';
-        document.getElementById('centerBox').style.top=yPos+'px';
-
-        //Show the background overlay and topbox...
-        document.getElementById('greyOverlay').style.display='block';
-        document.getElementById('centerBox').style.display='block';
-        
-    }
-
-
-    function closeTop()
-    {
-        //Hide the overlay and tobox...
-        document.getElementById('greyOverlay').style.display='none';
-        document.getElementById('centerBox').style.display='none';
-    }
-    //-->
-    </script>
 </head>
 <body>
 
-<div id="greyOverlay" style="display:none;" onClick="closeTop();"> 
+<div id="greyOverlay" onClick="closeTop();"> 
 </div>
 
-<div id="centerBox" style="display:none;"> 
+<div id="centerBox"> 
 	<h1>Fork</h1>
     <p>To insert this response as a response to another statement, copy the text below and paste it into the textbox of the statement that you want to include this response as a response to.</p>
     <p id="centerBoxID">ID will be shown here</p>
 	<p>
-	<a href="#" onclick="closeTop();return false;"><img src="closeButton2.png" id="closeButton" /></a>
+	<img src="closeButton2.png" class="closeButton" />
 	</p>
+</div>
+
+<div id="loginRegisterBox"> 
+	<p>
+	<img src="closeButton2.png" class="closeButton" />
+	</p>
+    
+    <div>
+        <h1>Register</h1>
+        <p>
+            <form action="index.php" method="POST">
+                <input type="hidden" name="op" value="new">
+                Username:<br>
+                <input type="text" name="user" size="60"><br>
+                Password:<br>
+                <input type="password" name="pass" size="60"><br>
+                <input type="submit" value="Create user">
+            </form>
+        </p>
+    </div>
+    
+    <div>
+        <h1>Login</h1>
+        <p>
+            <form action="index.php" method="POST">
+                <input type="hidden" name="op" value="login">
+                Username:<br>
+                <input type="text" name="user" size="60"><br>
+                Password:<br>
+                <input type="password" name="pass" size="60"><br>
+                <input type="submit" value="Log in">
+            </form>
+        </p>
+    </div>
+
+    <div>
+        <h1>Change password</h1>
+        <p>
+            <form action="index.php" method="POST">
+                <input type="hidden" name="op" value="change">
+                Username:<br>
+                <input type="text" name="user" size="60"><br>
+                Current password:<br>
+                <input type="password" name="pass" size="60"><br>
+                New password:<br>
+                <input type="password" name="newpass" size="60"><br>
+                <input type="submit" value="Change password">
+            </form>
+        </p>
+    </div>
 </div>
 
 <?php
@@ -400,12 +428,21 @@ if(isset($_GET["rId"])) {
 if($rId != 0) {
 ?>
 
-<div id="mainCircleSize">
-    <div class="circle circleSize circle1" onclick="goToRID(this, event, 0 ,'');">
+<div id="mainCircleSize" style="visibility:hidden;">
+    <div class="circle circleSize" onclick="goToRID(this, event, 0 ,'');">
         <h2 class="statement statementSize" onclick="goToRID(this, event, 0, '');">The Public Spheres: Ideas Taking Shape</h2>
+        
 
     <?php
-        
+        if(isset($_SESSION['user'])) {
+            print ("<p id=\"user\">Welcome, ".htmlspecialchars($_SESSION['user'])."</p>
+                <form id=\"logoutForm\" action=\"index.php\" method=\"POST\">
+                    <p id=\"logoutLink\">Logout <input type=\"hidden\" name=\"op\" value=\"logout\"></p>
+                </form>");
+        }
+        else {
+            print ("<p id=\"loginRegisterLink\">Login/Register</p>");
+        }
     
         $parentsOutputText = ""; 
         $hasParents = true;
@@ -417,9 +454,11 @@ if($rId != 0) {
         if($rId != 0) 
         {        
             $temp_aIds = array();
+            $lastAId = 0;
+            
             foreach ($aIds as $aId) {
-                if ($stmt = $mysqli->prepare("SELECT r.responseText, c.isAgree FROM Responses r, (SELECT responseId, isAgree FROM Context WHERE responseId = ?) c WHERE c.responseId = r.responseId;")) {
-                    $stmt->bind_param('i', $aId);
+                if ($stmt = $mysqli->prepare("SELECT r.responseText, c.isAgree FROM Responses r, (SELECT responseId, isAgree FROM Context WHERE responseId = ? AND parentId = ?) c WHERE c.responseId = r.responseId;")) {
+                    $stmt->bind_param('ii', $aId, $lastAId);
                     $stmt->execute();
                     $stmt->bind_result($parentText, $parentIsAgree);
                     
@@ -447,6 +486,8 @@ if($rId != 0) {
                 } else {
                     $hasParents = false;
                 }
+                
+                $lastAId = $aId;
             }
             
             //Close the database connection
@@ -458,8 +499,8 @@ if($rId != 0) {
         require('db/config.php');
         
         $mysqli = new mysqli($host, $username, $password, $db);                    
-        if ($stmt = $mysqli->prepare("SELECT r.responseText, c.isAgree FROM Responses r, (SELECT responseId, isAgree FROM Context WHERE responseId = ?) c WHERE c.responseId = r.responseId;")) {
-            $stmt->bind_param('i', $rId);
+        if ($stmt = $mysqli->prepare("SELECT r.responseText, c.isAgree FROM Responses r, (SELECT responseId, isAgree FROM Context WHERE responseId = ? AND parentId = ?) c WHERE c.responseId = r.responseId;")) {
+            $stmt->bind_param('ii', $rId, $aIds[count($aIds)-1]);
             $stmt->execute();
             $stmt->bind_result($statementText, $statementIsAgree);
             
@@ -467,11 +508,13 @@ if($rId != 0) {
             if($stmt->fetch()) {
                 print("<div id=\"innerCircle\" class=\"circle circleSize\"><h2 class=\"statement statementSize\">$statementText</h2>");
                 
-                if($statementIsAgree == 1) {
-                    print("<p class=\"agreeLabel\">Agree</p>");
-                } elseif($statementIsAgree == 0){
-                    print("<p class=\"disagreeLabel\">Disagree</p>");
-                }
+                //if(count($aIds) > 1) {
+                    if($statementIsAgree == 1) {
+                        print("<p class=\"agreeLabel\">Agree</p>");
+                    } elseif($statementIsAgree == 0){
+                        print("<p class=\"disagreeLabel\">Disagree</p>");
+                    }
+                //}
             }
             
             $stmt->close();
@@ -496,10 +539,18 @@ if($rId != 0) {
 ?>
 
 <div id="mainCircleSize">
-<div id="innerCircle" class="circle circleSize circle1">
+<div id="innerCircle" class="circle circleSize">
     <h2 class="statement statementSize">The Public Spheres: Ideas Taking Shape</h2>
-
     <?php
+        if(isset($_SESSION['user'])) {
+            print ("<p id=\"user\">Welcome, ".htmlspecialchars($_SESSION['user'])."</p>
+                <form id=\"logoutForm\" action=\"index.php\" method=\"POST\">
+                    <p id=\"logoutLink\">Logout <input type=\"hidden\" name=\"op\" value=\"logout\"></p>
+                </form>");
+        }
+        else {
+            print ("<p id=\"loginRegisterLink\">Login/Register</p>");
+        }
         outputCategoryContents($rId, array());
     ?>
     

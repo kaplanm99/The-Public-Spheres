@@ -24,7 +24,11 @@ CREATE TABLE IF NOT EXISTS `Responses` (
   PRIMARY KEY (`responseId`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=46 ;
 
-4. Create a folder in the root directory titled db and create a file in it titled config.php. Set the folder's permissions only allow owner and group read access and disable all other permissions. In config.php, create a php block that sets the following variables: $host, $username , $password, $db to the values corresponding to your MySQL database.
+4. Create a folder in the root directory titled db and create a file in it titled config.php. Set the folder and file's permissions only allow owner and group read access and disable all other permissions. In config.php, create a php block that sets the following variables: $host, $username , $password, $db to the values corresponding to your MySQL database.
+
+5. Change the permissions of user-man.php, pwqcheck.php, and PasswordHash.php to only allow owner and group read, write, execute access.
 
 Notes:
 fork.png and forkHighlighted.png icons are borrowed from http://raphaeljs.com/icons/ where they were released under the MIT license - http://raphaeljs.com/license.html
+
+The user accounts system is powered by phpass and sample code found here http://www.openwall.com/articles/PHP-Users-Passwords. phpass and the sample code were released both into the public domain and under a heavily cut-down "BSD license", to the point of being copyright only.
