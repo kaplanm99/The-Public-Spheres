@@ -171,57 +171,22 @@ function agreeDisagreeRatio($responseID) {
     return $ratio;
 }
 
-function outputResponses($type, $typeIsAgree, $respID, $aIds) {
-    print("    
-    <div class=\"".$type."CircleColumn circleColumnSize\">
-        <h3 class=\"".$type."Title titleSize\">".$type."</h3>
-        <div class=\"responses responsesSize\">");
-                
-    require('db/config.php');
-
-    $mysqli = new mysqli($host, $username, $password, $db);
-    
-    if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText FROM Responses r, (SELECT responseId FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId;")) {
-        $stmt->bind_param('ii', $respID, $typeIsAgree);
-        $stmt->execute();
-        $stmt->bind_result($responseID, $responseText);
-        
-        // fetch values
-        while ($stmt->fetch()) {
-            if($respID == 0) {
-                print("<div id=\"$responseID\" onclick=\"goToRID(this, event, $responseID ,'&aIds[]=0');\"><p class=\"responseP\" onclick=\"goToRID(this, event, $responseID ,'&aIds[]=0');\" style=\"float: left;padding:5px\">$responseText</p><p style=\"float: left; width: 40px;height:35px;line-height:12px;\"><img class=\"forkIcon\" src=\"fork.png\" onclick=\"showTop($responseID);return false;\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
-            } else {
-                print("<div id=\"$responseID\" onclick=\"goToRID(this, event, $responseID ,'".arrayPHPToJS($aIds,$respID)."');\"><p class=\"responseP\" onclick=\"goToRID(this, event, $responseID ,'".arrayPHPToJS($aIds,$respID)."');\" style=\"float: left;padding:5px\">$responseText</p><p style=\"float: left; width: 40px;height:35px;line-height:12px;\"><img class=\"forkIcon\" src=\"fork.png\" onclick=\"showTop($responseID);return false;\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
-            }
-            
-            if($typeIsAgree == 0 || $typeIsAgree == 1 || $typeIsAgree == 2) {
-                $ratio = agreeDisagreeRatio($responseID);
-                
-                print("<script type=\"text/javascript\">$(document).ready(function(){changeBGC(document.getElementById(\"$responseID\"), $ratio, $typeIsAgree);});</script>");
-            }
-        }
-        
-        $stmt->close();
-    }
-    
-    $mysqli->close();
-    
-    print("        
-        </div>
-    </div>");
-}
-
 function outputDiscussionContents($respID, $aIds) {
 
     print("<div class=\"circleResponses circleResponsesSize\">");
 
-    outputResponses("Agree", 1, $respID, $aIds);
+    require('Responses.php');
+    $agreeResponses = new Responses("Agree", 1, $respID, $aIds);
+    $agreeResponses->generateResponses();
+    $agreeResponses->outputResponses();
                                 
     print("        
     <div class=\"dividingLine dividingLineSize\"></div>
     ");
     
-    outputResponses("Disagree", 0, $respID, $aIds);
+    $disagreeResponses = new Responses("Disagree", 0, $respID, $aIds);
+    $disagreeResponses->generateResponses();
+    $disagreeResponses->outputResponses();
     
     print("        
     <form id=\"responseForm\" name=\"input\" action=\"index.php?rId=$respID".ancestorStringNonZero($aIds)."\" method=\"post\">
@@ -243,12 +208,17 @@ function outputDiscussionContents($respID, $aIds) {
 function outputCategoryContents($respID, $aIds) {
     print("<div class=\"circleResponses circleResponsesSize\">");
 
-    outputResponses("Categories", 3, $respID, $aIds);
+    require('Responses.php');
+    $categoriesResponses = new Responses("Categories", 3, $respID, $aIds);
+    $categoriesResponses->generateResponses();
+    $categoriesResponses->outputResponses();
                                 
     print("
     <div class=\"dividingLine dividingLineSize\"></div>");
         
-    outputResponses("Discussions", 2, $respID, $aIds);
+    $discussionsResponses = new Responses("Discussions", 2, $respID, $aIds);
+    $discussionsResponses->generateResponses();
+    $discussionsResponses->outputResponses();
     
     print("        
     <form id=\"responseForm\" name=\"input\" action=\"index.php?rId=$respID".ancestorStringNonZero($aIds)."\" method=\"post\">

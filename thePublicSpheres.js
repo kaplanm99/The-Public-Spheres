@@ -123,11 +123,11 @@ $(document).ready(function(){
    $(".closeButton").click(closeTop);
    
    $(".forkIcon").mouseover(function(){
-	 $(this).attr("src", "forkHighlighted.png");
+	 $(this).children('img').attr("src", "forkHighlighted.png");
    });
    
    $(".forkIcon").mouseout(function(){
-	 $(this).attr("src", "fork.png");
+	 $(this).children('img').attr("src", "fork.png");
    });
    
    $("#loginRegisterLink").click(showLoginRegister);
