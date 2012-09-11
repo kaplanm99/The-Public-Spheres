@@ -1,4 +1,6 @@
 <?php
+/* Copyright (c) 2012 Michael Andrew Kaplan
+ * See the file license.txt for copying permission. */
 
 require('Response.php');
 

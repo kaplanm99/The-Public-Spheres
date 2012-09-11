@@ -101,18 +101,6 @@ function responseExists($responseId) {
     return $exists;
 }
 
-function arrayPHPToJS($arr, $curRID) {
-    $jsArr = "";
-    
-    foreach ($arr as $val) {
-        $jsArr = $jsArr . "&aIds[]=" . $val;
-    }
-    
-    $jsArr = $jsArr . "&aIds[]=" . $curRID;
-    
-    return $jsArr;
-}
-
 function ancestorString($arr) {
     if(count($arr) == 0) {
         return "&aIds[]=0";
@@ -129,46 +117,6 @@ function ancestorStringNonZero($arr) {
     }
     
     return $jsArr;
-}
-
-function agreeDisagreeRatio($responseID) {
-    require('db/config.php');
-    $mysqli2 = new mysqli($host, $username, $password, $db);
-        
-    if ($stmt2 = $mysqli2->prepare("SELECT COUNT(c.responseId) FROM Context c WHERE c.parentId = ? AND c.isAgree = 1;")) {
-        $stmt2->bind_param('i', $responseID);
-        $stmt2->execute();
-        $stmt2->bind_result($agrCount);
-        
-        $stmt2->fetch();
-    }
-
-    $stmt2->close();
-    
-    if ($stmt2 = $mysqli2->prepare("SELECT COUNT(c.responseId) FROM Context c WHERE c.parentId = ? AND c.isAgree = 0;")) {
-        $stmt2->bind_param('i', $responseID);
-        $stmt2->execute();
-        $stmt2->bind_result($disagrCount);
-        
-        $stmt2->fetch();
-    }
-
-    $stmt2->close();
-    
-    if($disagrCount == 0) {
-        if($agrCount == 0) {
-            $ratio = 1;
-        } else {
-            $ratio = 100;
-        }
-    }
-    else {
-        $ratio = $agrCount/$disagrCount;
-    }
-    
-    $mysqli2->close();
-    
-    return $ratio;
 }
 
 function outputDiscussionContents($respID, $aIds) {
