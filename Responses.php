@@ -20,7 +20,7 @@ class Responses {
         $this->responseArray = array();
     }
     
-    function arrayPHPToJS($arr, $curRID) {
+    private function arrayPHPToJS($arr, $curRID) {
         $jsArr = "";
         
         foreach ($arr as $val) {
@@ -32,7 +32,7 @@ class Responses {
         return $jsArr;
     }
     
-    function agreeDisagreeRatio($responseID) {
+    private function agreeDisagreeRatio($responseID) {
         require('db/config.php');
         $mysqli2 = new mysqli($host, $username, $password, $db);
             
@@ -72,7 +72,7 @@ class Responses {
         return $ratio;
     }
     
-    function generateResponses() {
+    public function generateResponses() {
         require('db/config.php');
 
         $mysqli = new mysqli($host, $username, $password, $db);
@@ -104,13 +104,13 @@ class Responses {
             if($this->respID == 0) {
                 print("<div id=\"".$response->getResponseID()."\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'&aIds[]=0');\"><p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'&aIds[]=0');\">".$response->getResponseText()."</p><p onclick=\"showTop(".$response->getResponseID().");return false;\" class=\"forkIcon\"><img src=\"fork.png\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
             } else {
-                $arrJS = arrayPHPToJS($this->aIds,$this->respID);
+                $arrJS = $this->arrayPHPToJS($this->aIds,$this->respID);
                 
                 print("<div id=\"".$response->getResponseID()."\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\"><p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\">".$response->getResponseText()."</p><p onclick=\"showTop(".$response->getResponseID().");return false;\" class=\"forkIcon\"><img src=\"fork.png\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
             }
             
             if($this->typeIsAgree == 0 || $this->typeIsAgree == 1 || $this->typeIsAgree == 2) {
-                $ratio = agreeDisagreeRatio($response->getResponseID());
+                $ratio = $this->agreeDisagreeRatio($response->getResponseID());
                 
                 print("<script type=\"text/javascript\">$(document).ready(function(){changeBGC(document.getElementById(\"".$response->getResponseID()."\"), $ratio, " . $this->typeIsAgree . ");});</script>");
             }
