@@ -119,6 +119,46 @@ function ancestorStringNonZero($arr) {
     return $jsArr;
 }
 
+function agreeDisagreeRatio($responseID) {
+    require('db/config.php');
+    $mysqli2 = new mysqli($host, $username, $password, $db);
+        
+    if ($stmt2 = $mysqli2->prepare("SELECT COUNT(c.responseId) FROM Context c WHERE c.parentId = ? AND c.isAgree = 1;")) {
+        $stmt2->bind_param('i', $responseID);
+        $stmt2->execute();
+        $stmt2->bind_result($agrCount);
+        
+        $stmt2->fetch();
+    }
+
+    $stmt2->close();
+    
+    if ($stmt2 = $mysqli2->prepare("SELECT COUNT(c.responseId) FROM Context c WHERE c.parentId = ? AND c.isAgree = 0;")) {
+        $stmt2->bind_param('i', $responseID);
+        $stmt2->execute();
+        $stmt2->bind_result($disagrCount);
+        
+        $stmt2->fetch();
+    }
+
+    $stmt2->close();
+    
+    if($disagrCount == 0) {
+        if($agrCount == 0) {
+            $ratio = 1;
+        } else {
+            $ratio = 100;
+        }
+    }
+    else {
+        $ratio = $agrCount/$disagrCount;
+    }
+    
+    $mysqli2->close();
+    
+    return $ratio;
+}
+
 function outputDiscussionContents($respID, $aIds) {
 
     print("<div class=\"circleResponses circleResponsesSize\">");
@@ -346,7 +386,7 @@ if(isset($_GET["rId"])) {
 if($rId != 0) {
 ?>
 
-<div id="mainCircleSize" style="visibility:hidden;">
+<div id="mainCircleSize">
     <div class="circle circleSize" onclick="goToRID(this, event, 0 ,'');">
         <h2 class="statement statementSize" onclick="goToRID(this, event, 0, '');">The Public Spheres: Ideas Taking Shape</h2>
         
