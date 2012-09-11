@@ -31,7 +31,7 @@ $hash_portable = FALSE;
 $dummy_salt = '$2a$08$1234567890123456789012';
 
 // Are we debugging this code?  If enabled, OK to leak server setup details.
-$debug = TRUE;
+$debug = FALSE;
 
 function fail($pub, $pvt = '')
 {
