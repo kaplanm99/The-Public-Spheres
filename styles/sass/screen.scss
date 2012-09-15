@@ -167,7 +167,7 @@ body {
 	margin-bottom: 0px;
 }
 
-#agreeButton {
+#AgreeButton {
 	float:left;
 	width:70px;
 	background-color:#b6d7a8;
@@ -178,7 +178,7 @@ body {
 	cursor:pointer;
 }
 
-#disagreeButton {
+#DisagreeButton {
 	float:right;
 	width:70px;
 	background-color:#ea9999;
@@ -189,7 +189,7 @@ body {
 	cursor:pointer;
 }
 
-#categoryButton {
+#CategoryButton {
 	float:left;
 	width:70px;
 	background-color:#99B6EA;
@@ -200,7 +200,7 @@ body {
 	cursor:pointer;
 }
 
-#discussionButton {
+#DiscussionButton {
 	float:right;
 	width:70px;
 	background-color:#EAC799;
@@ -387,4 +387,10 @@ Sizes
 .responseP {
 	float: left;
 	padding:5px
+}
+
+.responseFormPlaceholder {
+	text-align: center;
+	padding-top: 25px;
+	clear: both;
 }

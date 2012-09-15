@@ -2,18 +2,15 @@
 /* Copyright (c) 2012 Michael Andrew Kaplan
  * See the file license.txt for copying permission. */
 
-if(isset($_POST["op"]) && $_POST["op"] == "logout") {
+if(isset($_POST["op"]) && $_POST["op"] == "logout" && isset($_SESSION['user'])) {
     unset($_SESSION['user']);
 }
-
  
 require('user-man.php'); 
 
 $manage_user_result = manage_user();
-
-//print($manage_user_result);
  
-if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"])) {    
+if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && isset($_SESSION['user'])) {    
     $rText = strip_tags($_POST["rText"]);
     $rText = trim($rText);
     $rText = filter_var($rText, FILTER_SANITIZE_STRING);
@@ -119,6 +116,27 @@ function ancestorStringNonZero($arr) {
     return $jsArr;
 }
 
+function outputForm($respID, $aIds, $button1Text, $button2Text) {
+    if(isset($_SESSION['user'])) {
+        print("        
+        <form id=\"responseForm\" name=\"input\" action=\"index.php?rId=$respID".ancestorStringNonZero($aIds)."\" method=\"post\">
+        
+            <textarea id=\"rText\" name=\"rText\" class=\"textbox textboxSize\"></textarea>
+            <input type=\"hidden\" id=\"rIsAgree\" name=\"rIsAgree\" value=\"0\" />
+            
+            <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"$respID\" />
+            
+            <div class=\"formButtons\">
+                <p id=\"".$button1Text."Button\">".$button1Text."</p>
+                <p id=\"".$button2Text."Button\">".$button2Text."</p>
+            </div>
+        </form>");
+    }
+    else {
+         print("<p class=\"responseFormPlaceholder\">Login to add a response</p>");
+    }
+}
+
 function outputDiscussionContents($respID, $aIds) {
 
     print("<div class=\"circleResponses circleResponsesSize\">");
@@ -136,21 +154,7 @@ function outputDiscussionContents($respID, $aIds) {
     $disagreeResponses->generateResponses();
     $disagreeResponses->outputResponses();
     
-    print("        
-    <form id=\"responseForm\" name=\"input\" action=\"index.php?rId=$respID".ancestorStringNonZero($aIds)."\" method=\"post\">
-    
-        <textarea id=\"rText\" name=\"rText\" class=\"textbox textboxSize\"></textarea>
-        <input type=\"hidden\" id=\"rIsAgree\" name=\"rIsAgree\" value=\"0\" />
-        
-        <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"$respID\" />
-        
-        <div class=\"formButtons\">
-            <p id=\"agreeButton\">Agree</p>
-            <p id=\"disagreeButton\">Disagree</p>
-        </div>
-    </form>");
-    
-
+    outputForm($respID, $aIds, "Agree", "Disagree");
 }
 
 function outputCategoryContents($respID, $aIds) {
@@ -168,20 +172,8 @@ function outputCategoryContents($respID, $aIds) {
     $discussionsResponses->generateResponses();
     $discussionsResponses->outputResponses();
     
-    print("        
-    <form id=\"responseForm\" name=\"input\" action=\"index.php?rId=$respID".ancestorStringNonZero($aIds)."\" method=\"post\">
+    outputForm($respID, $aIds, "Category", "Discussion");
     
-        <textarea id=\"rText\" name=\"rText\" class=\"textbox textboxSize\"></textarea>
-        <input type=\"hidden\" id=\"rIsAgree\" name=\"rIsAgree\" value=\"0\" />
-        
-            <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"$respID\" />
-            
-            <div class=\"formButtons\">
-                <p id=\"categoryButton\">Category</p>
-                <p id=\"discussionButton\">Discussion</p>
-            </div>
-        </form>
-    </div>");    
 }
 
 function validParent($first, $second) {

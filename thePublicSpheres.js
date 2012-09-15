@@ -95,7 +95,7 @@ function showLoginRegister()
 }
 
 $(document).ready(function(){
-  $("#agreeButton").click(function(event){
+  $("#AgreeButton").click(function(event){
 	 $("#rIsAgree").attr("value",1);
 	 $("#responseForm").submit();
    });
@@ -104,17 +104,17 @@ $(document).ready(function(){
 	 $("#logoutForm").submit();
    });
    
-   $("#disagreeButton").click(function(event){
+   $("#DisagreeButton").click(function(event){
 	 $("#rIsAgree").attr("value",0);
 	 $("#responseForm").submit();
    });
 
-	$("#discussionButton").click(function(event){
+	$("#DiscussionButton").click(function(event){
 	 $("#rIsAgree").attr("value",2);
 	 $("#responseForm").submit();
    });
    
-   $("#categoryButton").click(function(event){
+   $("#CategoryButton").click(function(event){
 	 $("#rIsAgree").attr("value",3);
 	 $("#responseForm").submit();
    });
