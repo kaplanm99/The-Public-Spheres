@@ -81,8 +81,7 @@ body {
 	margin-right: auto;
 }
 
-.responses  div{
-	
+.response{
 	border: 1px solid black;
 	@include border-radius(10px);
 	text-align:center;
@@ -104,7 +103,7 @@ body {
 	float:left;
 }
 
-.AgreeCircleColumn div div {
+.AgreeCircleColumn .response {
 	background-color:#b6d7a8;
 }	
 
@@ -112,7 +111,7 @@ body {
 	float:left;
 }
 
-.CategoriesCircleColumn div div {
+.CategoriesCircleColumn .response {
 	background-color:#99B6EA;
 }
 
@@ -124,11 +123,11 @@ body {
 	float:right;
 }
 
-.DisagreeCircleColumn div div {
+.DisagreeCircleColumn .response {
 	background-color:#ea9999;
 }
 
-.DiscussionsCircleColumn div div {
+.DiscussionsCircleColumn .response {
 	background-color:#eac799;
 }
 
@@ -224,7 +223,7 @@ Sizes
 }
 
 .circleSize {
-	width:98%;
+	width:99%;
 	/*height:94%;*/
 }
 
@@ -246,12 +245,6 @@ Sizes
 	margin-bottom:0px;
 	@include border-radius(5px);
 }
-
-/*
-.responsesSize div {
-	padding: 5px;
-}
-*/
 
 .circleColumnSize {
 	width: 48%;
@@ -379,9 +372,26 @@ Sizes
 
 .forkIcon {
 	float: left;
-	width: 40px;
-	height:35px;
+	width: 28px;
+	height:40px;
 	line-height:12px;
+}
+
+.arrowIcons {
+	float: left;
+	width: 28px;
+	height:40px;
+	line-height:12px;
+}
+
+.upArrow {
+	height: 15px;
+	width: 28px;
+}
+
+.downArrow {
+	height: 15px;
+	width: 28px;
 }
 
 .responseP {

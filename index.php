@@ -9,6 +9,46 @@ if(isset($_POST["op"]) && $_POST["op"] == "logout" && isset($_SESSION['user'])) 
 require('user-man.php'); 
 
 $manage_user_result = manage_user();
+
+/* Fix this query to implement voting
+if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"])) {    
+    $rID = strip_tags($_POST["rID"]);
+    $rID = trim($rID);
+    $rID = intval($rID);
+    
+    $vote = strip_tags($_POST["vote"]);
+    $vote = trim($vote);
+    $vote = intval($vote);
+    
+    $rPID = strip_tags($_POST["rPID"]);
+    $rPID = trim($rPID);
+    $rPID = intval($rPID);
+    
+    if($vote == 1 || $vote == -1) {    
+        require('db/config.php');
+        
+        $mysqli = new mysqli($host, $username, $password, $db);
+
+        if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText) VALUES (?);")) {
+            $stmt->bind_param('s', $rText);
+            
+            if($stmt->execute()) {
+                $newRID = $stmt->insert_id;
+                $stmt->close();
+                if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId) VALUES (?,?,?);")) {
+                    $stmt->bind_param('iii', $newRID, $rIsAgree, $rPID);
+            
+                    $stmt->execute();
+                }
+            }
+            
+            $stmt->close();
+        }
+            
+        $mysqli->close();        
+    }
+}
+*/
  
 if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && isset($_SESSION['user'])) {    
     $rText = strip_tags($_POST["rText"]);

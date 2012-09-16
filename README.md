@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `Context` (
   `responseId` int(10) unsigned NOT NULL,
   `isAgree` int(10) unsigned NOT NULL,
   `parentId` int(10) unsigned NOT NULL,
+  `score` int(10) NOT NULL,
   PRIMARY KEY (`responseId`,`isAgree`,`parentId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 CREATE TABLE IF NOT EXISTS `Responses` (
@@ -23,6 +24,11 @@ CREATE TABLE IF NOT EXISTS `Responses` (
   `responseText` varchar(1000) NOT NULL,
   PRIMARY KEY (`responseId`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=46 ;
+CREATE TABLE IF NOT EXISTS `users` (
+  `user` varchar(60) DEFAULT NULL,
+  `pass` varchar(60) DEFAULT NULL,
+  UNIQUE KEY `user` (`user`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 4. Create a folder in the root directory titled db and create a file in it titled config.php. Set the folder and file's permissions only allow owner and group read access and disable all other permissions. In config.php, create a php block that sets the following variables: $host, $username , $password, $db to the values corresponding to your MySQL database.
 

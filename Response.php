@@ -6,10 +6,12 @@ class Response {
 
     private $responseID;
     private $responseText;
+    private $responseScore;
     
-    function __construct($responseID, $responseText) {           
+    function __construct($responseID, $responseText, $responseScore) {     
         $this->responseID = $responseID;
-        $this->responseText = $responseText;        
+        $this->responseText = $responseText;
+        $this->responseScore = $responseScore;
     }
     
     public function setResponseID($responseID) {
@@ -28,5 +30,12 @@ class Response {
         return $this->responseText;            
     }
 
+    public function setResponseScore($responseScore) {
+        $this->responseScore = $responseScore;
+    }       
+
+    public function getResponseScore() {           
+        return $this->responseScore;            
+    }
 }
 ?>

@@ -122,6 +122,22 @@ $(document).ready(function(){
    $("#greyOverlay").click(closeTop);
    $(".closeButton").click(closeTop);
    
+   $(".upArrow").mouseover(function(){
+	 $(this).attr("src", "upArrowHighlighted.png");
+   });
+   
+   $(".upArrow").mouseout(function(){
+	 $(this).attr("src", "upArrow.png");
+   });
+   
+   $(".downArrow").mouseover(function(){
+	 $(this).attr("src", "downArrowHighlighted.png");
+   });
+   
+   $(".downArrow").mouseout(function(){
+	 $(this).attr("src", "downArrow.png");
+   });
+   
    $(".forkIcon").mouseover(function(){
 	 $(this).children('img').attr("src", "forkHighlighted.png");
    });
@@ -153,7 +169,7 @@ $(document).ready(function(){
 	});
 
 	$(".responseP").each(function (index, domEle) {
-        $(domEle).width($(domEle).parent().width()-52);
+        $(domEle).width($(domEle).parent().width()-67);
 	});
 	
 	$(".dividingLineSize").each(function (index, domEle) {

@@ -32,6 +32,16 @@ class Responses {
         return $jsArr;
     }
     
+    private function ancestorStringNonZero($arr) {
+        $jsArr = "";
+
+        foreach ($arr as $val) {
+            $jsArr = $jsArr . "&aIds[]=" . $val;
+        }
+        
+        return $jsArr;
+    }
+    
     private function agreeDisagreeRatio($responseID) {
         require('db/config.php');
         $mysqli2 = new mysqli($host, $username, $password, $db);
@@ -77,13 +87,13 @@ class Responses {
 
         $mysqli = new mysqli($host, $username, $password, $db);
         
-        if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText FROM Responses r, (SELECT responseId FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId;")) {
+        if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText, c.score FROM Responses r, (SELECT responseId, score FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId;")) {
             $stmt->bind_param('ii', $this->respID, $this->typeIsAgree);
             $stmt->execute();
-            $stmt->bind_result($responseID, $responseText);
+            $stmt->bind_result($responseID, $responseText, $responseScore);
             
             while ($stmt->fetch()) {
-                $this->responseArray[] = new Response($responseID, $responseText);
+                $this->responseArray[] = new Response($responseID, $responseText, $responseScore);
             }
             
             $stmt->close();
@@ -102,12 +112,40 @@ class Responses {
         foreach ($this->responseArray as $response) {
             
             if($this->respID == 0) {
-                print("<div id=\"".$response->getResponseID()."\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'&aIds[]=0');\"><p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'&aIds[]=0');\">".$response->getResponseText()."</p><p onclick=\"showTop(".$response->getResponseID().");return false;\" class=\"forkIcon\"><img src=\"fork.png\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
+                $arrJS = "&aIds[]=0";
             } else {
                 $arrJS = $this->arrayPHPToJS($this->aIds,$this->respID);
+            }    
+             
+            print("<div id=\"".$response->getResponseID()."\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\" class=\"response\">
+            <div class=\"arrowIcons\">
+            
+            
+                <form style=\"float:left;\" name=\"input\" action=\"index.php?rId=".$this->respID."".$this->ancestorStringNonZero($this->aIds)."\" method=\"post\">
                 
-                print("<div id=\"".$response->getResponseID()."\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\"><p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\">".$response->getResponseText()."</p><p onclick=\"showTop(".$response->getResponseID().");return false;\" class=\"forkIcon\"><img src=\"fork.png\"><br/>Fork</p><p style=\"clear: both;\"></p></div>");
-            }
+                    <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"".$this->respID."\" />
+                    <input type=\"hidden\" id=\"rID\" name=\"rID\" value=\"".$response->getResponseID()."\" />
+                    <input type=\"hidden\" name=\"vote\" value=\"1\" />
+                    <input type=\"image\" src=\"upArrow.png\" class=\"upArrow\">
+                    
+                </form>
+                " . $response->getResponseScore() . "
+                <form style=\"float:left;\" name=\"input\" action=\"index.php?rId=".$this->respID."".$this->ancestorStringNonZero($this->aIds)."\" method=\"post\">
+                    <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"".$this->respID."\" />
+                    <input type=\"hidden\" id=\"rID\" name=\"rID\" value=\"".$response->getResponseID()."\" />
+                    <input type=\"hidden\" name=\"vote\" value=\"-1\" />
+                    <input type=\"image\" src=\"downArrow.png\" class=\"downArrow\">
+                    
+                </form>
+                
+            </div>
+            <p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\">".$response->getResponseText()."
+            </p>
+            <p onclick=\"showTop(".$response->getResponseID().");return false;\" class=\"forkIcon\">
+                <img src=\"fork.png\"><br/>Fork
+            </p>
+            <p style=\"clear: both;\"></p>
+            </div>");           
             
             if($this->typeIsAgree == 0 || $this->typeIsAgree == 1 || $this->typeIsAgree == 2) {
                 $ratio = $this->agreeDisagreeRatio($response->getResponseID());
