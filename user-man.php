@@ -12,7 +12,7 @@ $db_pass = $password;
 $db_name = $db;
 
 // Do we have the pwqcheck(1) program from the passwdqc package?
-$use_pwqcheck = TRUE;
+$use_pwqcheck = FALSE;
 // We can override the default password policy
 $pwqcheck_args = '';
 #$pwqcheck_args = 'config=/etc/passwdqc.conf';
@@ -117,26 +117,27 @@ function manage_user() {
             return fail('return failed to hash new password');
         unset($hasher);
 
-        if($stmt = $db->prepare('insert into users (user, pass) values (?, ?)'))
+        if(!($stmt = $db->prepare('INSERT INTO Users (user, pass) VALUES (?, ?)'))) {
             return fail('MySQL prepare', $db->error);
-       if($stmt->bind_param('ss', $user, $hash))
-            return fail('MySQL bind_param', $db->error);
-        if (!$stmt->execute()) {
-    /* Figure out why this failed - maybe the username is already taken?
-     * It could be more reliable/portable to issue a SELECT query here.  We would
-     * definitely need to do that (or at least include code to do it) if we were
-     * supporting multiple kinds of database backends, not just MySQL.  However,
-     * the prepared statements interface we're using is MySQL-specific anyway. */
-            if ($db->errno === 1062 /* ER_DUP_ENTRY */)
-                return fail('This username is already taken');
-            else
-                return fail('MySQL execute', $db->error);
+        }
+        else {
+            if(!($stmt->bind_param('ss', $user, $hash))) {
+                return fail('MySQL bind_param', $db->error);
+            }
+            else {
+                if (!$stmt->execute()) {
+                    if ($db->errno === 1062 /* ER_DUP_ENTRY */)
+                        return fail('This username is already taken');
+                    else
+                        return fail('MySQL execute', $db->error);
+                }
+            }
         }
 
         $what = 'User created';
     } else {
         $hash = '*'; // In case the user is not found
-        if(!($stmt = $db->prepare('select pass from users where user=?')))
+        if(!($stmt = $db->prepare('SELECT pass FROM Users WHERE user=?')))
             return fail('MySQL prepare', $db->error);
         if(!($stmt->bind_param('s', $user)))
             return fail('MySQL bind_param', $db->error);
@@ -172,7 +173,7 @@ function manage_user() {
                 return fail('Failed to hash new password');
             unset($hasher);
 
-            if(!($stmt = $db->prepare('update users set pass=? where user=?')))
+            if(!($stmt = $db->prepare('UPDATE Users SET pass=? WHERE user=?')))
                 return fail('MySQL prepare', $db->error);
             if(!($stmt->bind_param('ss', $hash, $user)))
                 return fail('MySQL bind_param', $db->error);

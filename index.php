@@ -9,9 +9,8 @@ if(isset($_POST["op"]) && $_POST["op"] == "logout" && isset($_SESSION['user'])) 
 require('user-man.php'); 
 
 $manage_user_result = manage_user();
-
-/* Fix this query to implement voting
-if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"])) {    
+ 
+if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($_SESSION['user'])) {    
     $rID = strip_tags($_POST["rID"]);
     $rID = trim($rID);
     $rID = intval($rID);
@@ -24,31 +23,111 @@ if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"])) {
     $rPID = trim($rPID);
     $rPID = intval($rPID);
     
-    if($vote == 1 || $vote == -1) {    
+    if($vote == 1 || $vote == -1) { 
+
         require('db/config.php');
         
         $mysqli = new mysqli($host, $username, $password, $db);
 
-        if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText) VALUES (?);")) {
-            $stmt->bind_param('s', $rText);
+        if($vote == 1)
+            $boolVote = 1;
+        else
+            $boolVote = 0;
             
-            if($stmt->execute()) {
-                $newRID = $stmt->insert_id;
-                $stmt->close();
-                if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId) VALUES (?,?,?);")) {
-                    $stmt->bind_param('iii', $newRID, $rIsAgree, $rPID);
-            
-                    $stmt->execute();
+        $hasVote = false; 
+        $sameVote = false;        
+        
+        if ($stmt = $mysqli->prepare("SELECT vote FROM Votes WHERE responseId = ? AND parentId = ? AND user = ?")) {
+            $stmt->bind_param('iis', $rID, $rPID, $_SESSION['user']);
+            $stmt->execute();
+            $stmt->bind_result($voteResult);
+                    
+            if($stmt->fetch()) {
+                $hasVote = true;
+                
+                if($voteResult == $boolVote) {
+                    $sameVote = true;
                 }
             }
             
             $stmt->close();
-        }
+        }                
+                        
+        if(!$sameVote) {
             
-        $mysqli->close();        
+            if(!$hasVote) {
+                if ($stmt = $mysqli->prepare("INSERT INTO Votes (responseId, parentId, user, vote) VALUES (?,?,?,?);")) {
+                    $stmt->bind_param('iisi', $rID, $rPID, $_SESSION['user'],  $boolVote);
+                
+                    if($stmt->execute()) {
+                        $stmt->close();
+                        
+                        if ($stmt = $mysqli->prepare("SELECT (SELECT COUNT(*) FROM Votes WHERE responseId = ? AND parentId = ? AND vote = 1) as upVotes, (SELECT COUNT(*) FROM Votes WHERE responseId = ? AND parentId = ? AND vote = 0) as downVotes")) {
+                            $stmt->bind_param('iiii', $rID, $rPID, $rID, $rPID);
+                            $stmt->execute();
+                            $stmt->bind_result($upVotes, $downVotes);
+                            
+                            if($stmt->fetch()) {
+                                $stmt->close();
+                                
+                                $newScore = $upVotes-$downVotes;
+                            
+                                if ($stmt = $mysqli->prepare("UPDATE Context SET score = ? WHERE responseId = ? AND parentId = ?")) {
+                                    $stmt->bind_param('iii', $newScore, $rID, $rPID);
+                                    $stmt->execute();
+                                    $stmt->close();
+                                }
+                                
+                            }
+                        }
+                        else {
+                            $stmt->close();
+                        }
+                    }
+                    else {
+                        $stmt->close();
+                    }
+                }
+            }
+            else {
+                if ($stmt = $mysqli->prepare("UPDATE Votes SET vote = ? WHERE responseId = ? AND parentId = ? AND user = ?;")) {
+                    $stmt->bind_param('iiis', $boolVote, $rID, $rPID, $_SESSION['user']);
+                
+                    if($stmt->execute()) {
+                        $stmt->close();
+                        
+                        if ($stmt = $mysqli->prepare("SELECT (SELECT COUNT(*) FROM Votes WHERE responseId = ? AND parentId = ? AND vote = 1) as upVotes, (SELECT COUNT(*) FROM Votes WHERE responseId = ? AND parentId = ? AND vote = 0) as downVotes")) {
+                            $stmt->bind_param('iiii', $rID, $rPID, $rID, $rPID);
+                            $stmt->execute();
+                            $stmt->bind_result($upVotes, $downVotes);
+                            
+                            if($stmt->fetch()) {
+                                $stmt->close();
+                                
+                                $newScore = $upVotes-$downVotes;
+                            
+                                if ($stmt = $mysqli->prepare("UPDATE Context SET score = ? WHERE responseId = ? AND parentId = ?")) {
+                                    $stmt->bind_param('iii', $newScore, $rID, $rPID);
+                                    $stmt->execute();
+                                    $stmt->close();
+                                }
+                                
+                            }
+                        }
+                        else {
+                            $stmt->close();
+                        }
+                    }
+                    else {
+                        $stmt->close();
+                    }
+                }
+            }
+        }   
+            
+        $mysqli->close();
     }
 }
-*/
  
 if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && isset($_SESSION['user'])) {    
     $rText = strip_tags($_POST["rText"]);
