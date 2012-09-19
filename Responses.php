@@ -87,13 +87,34 @@ class Responses {
 
         $mysqli = new mysqli($host, $username, $password, $db);
         
-        if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText, c.score FROM Responses r, (SELECT responseId, score FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId;")) {
+        if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText, c.score FROM Responses r, (SELECT responseId, score FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId ORDER BY c.score DESC;")) {
             $stmt->bind_param('ii', $this->respID, $this->typeIsAgree);
             $stmt->execute();
             $stmt->bind_result($responseID, $responseText, $responseScore);
             
             while ($stmt->fetch()) {
-                $this->responseArray[] = new Response($responseID, $responseText, $responseScore);
+            
+                $responseVote = -1;
+                
+                if(isset($_SESSION['user'])) {
+                    
+                    require('db/config.php');
+
+                    $mysqli2 = new mysqli($host, $username, $password, $db);
+                    
+                    if ($stmt2 = $mysqli2->prepare("SELECT vote FROM Votes WHERE responseId = ? AND parentId = ? AND user = ?;")) {
+                        $stmt2->bind_param('iis', $responseID, $this->respID, $_SESSION['user']);
+                        $stmt2->execute();
+                        $stmt2->bind_result($responseVote);
+                    
+                        $stmt2->fetch();
+                        
+                        $stmt2->close();
+                    }
+                    
+                    $mysqli2->close();
+                }
+                $this->responseArray[] = new Response($responseID, $responseText, $responseScore, $responseVote);
             }
             
             $stmt->close();
@@ -125,18 +146,30 @@ class Responses {
                 
                     <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"".$this->respID."\" />
                     <input type=\"hidden\" id=\"rID\" name=\"rID\" value=\"".$response->getResponseID()."\" />
-                    <input type=\"hidden\" name=\"vote\" value=\"1\" />
-                    <input type=\"image\" src=\"upArrow.png\" class=\"upArrow\">
-                    
-                </form>
+                    <input type=\"hidden\" name=\"vote\" value=\"1\" />");
+            
+            if($response->getResponseVote() == 1){
+                print("<input type=\"image\" src=\"upArrowDepressed.png\" class=\"upArrowDepressed arrow\">");
+            }
+            else {
+                print("<input type=\"image\" src=\"upArrow.png\" class=\"upArrow arrow\">");
+            }
+            
+            print("</form>
                 " . $response->getResponseScore() . "
                 <form style=\"float:left;\" name=\"input\" action=\"index.php?rId=".$this->respID."".$this->ancestorStringNonZero($this->aIds)."\" method=\"post\">
                     <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"".$this->respID."\" />
                     <input type=\"hidden\" id=\"rID\" name=\"rID\" value=\"".$response->getResponseID()."\" />
-                    <input type=\"hidden\" name=\"vote\" value=\"-1\" />
-                    <input type=\"image\" src=\"downArrow.png\" class=\"downArrow\">
-                    
-                </form>
+                    <input type=\"hidden\" name=\"vote\" value=\"-1\" />");
+            
+            if($response->getResponseVote() == 0){
+                print("<input type=\"image\" src=\"downArrowDepressed.png\" class=\"downArrowDepressed arrow\">");
+            }
+            else {
+                print("<input type=\"image\" src=\"downArrow.png\" class=\"downArrow arrow\">");
+            }
+            
+            print("</form>
                 
             </div>
             <p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\">".$response->getResponseText()."

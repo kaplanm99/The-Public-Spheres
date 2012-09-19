@@ -123,7 +123,42 @@ if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($
                     }
                 }
             }
-        }   
+        } 
+        else {
+            if ($stmt = $mysqli->prepare("DELETE FROM Votes WHERE responseId = ? AND parentId = ? AND user = ?;")) {
+                $stmt->bind_param('iis', $rID, $rPID, $_SESSION['user']);
+                
+                if($stmt->execute()) {
+                    $stmt->close();
+                    
+                    if ($stmt = $mysqli->prepare("SELECT (SELECT COUNT(*) FROM Votes WHERE responseId = ? AND parentId = ? AND vote = 1) as upVotes, (SELECT COUNT(*) FROM Votes WHERE responseId = ? AND parentId = ? AND vote = 0) as downVotes")) {
+                        
+                        $stmt->bind_param('iiii', $rID, $rPID, $rID, $rPID);
+                        $stmt->execute();
+                        $stmt->bind_result($upVotes, $downVotes);
+                        
+                        if($stmt->fetch()) {
+                            $stmt->close();
+                            
+                            $newScore = $upVotes-$downVotes;
+                        
+                            if ($stmt = $mysqli->prepare("UPDATE Context SET score = ? WHERE responseId = ? AND parentId = ?")) {
+                                $stmt->bind_param('iii', $newScore, $rID, $rPID);
+                                $stmt->execute();
+                                $stmt->close();
+                            }
+                            
+                        }
+                    }
+                    else {
+                        $stmt->close();
+                    }
+                }
+                else {
+                    $stmt->close();
+                }
+            }
+        }
             
         $mysqli->close();
     }

@@ -94,6 +94,24 @@ function showLoginRegister()
 	document.getElementById('loginRegisterBox').style.display='block';
 }
 
+function attachArrowMouseEvents(selector) {
+	$("."+selector).mouseover(function(){
+	 $(this).attr("src", selector+"Highlighted.png");
+   });
+
+	$("."+selector).mouseout(function(){
+	 $(this).attr("src", selector+".png");
+   });
+   
+   $("."+selector+"Depressed").mouseover(function(){
+	 $(this).attr("src", selector+"HighlightedDepressed.png");
+   });
+
+	$("."+selector+"Depressed").mouseout(function(){
+	 $(this).attr("src", selector+"Depressed"+".png");
+   });
+}
+
 $(document).ready(function(){
   $("#AgreeButton").click(function(event){
 	 $("#rIsAgree").attr("value",1);
@@ -122,23 +140,10 @@ $(document).ready(function(){
    $("#greyOverlay").click(closeTop);
    $(".closeButton").click(closeTop);
    
-   $(".upArrow").mouseover(function(){
-	 $(this).attr("src", "upArrowHighlighted.png");
-   });
+   attachArrowMouseEvents("upArrow");
+   attachArrowMouseEvents("downArrow");
    
-   $(".upArrow").mouseout(function(){
-	 $(this).attr("src", "upArrow.png");
-   });
-   
-   $(".downArrow").mouseover(function(){
-	 $(this).attr("src", "downArrowHighlighted.png");
-   });
-   
-   $(".downArrow").mouseout(function(){
-	 $(this).attr("src", "downArrow.png");
-   });
-   
-   $(".forkIcon").mouseover(function(){
+  $(".forkIcon").mouseover(function(){
 	 $(this).children('img').attr("src", "forkHighlighted.png");
    });
    
