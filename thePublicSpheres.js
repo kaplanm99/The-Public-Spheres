@@ -74,6 +74,7 @@ function closeTop()
 	document.getElementById('greyOverlay').style.display='none';
 	document.getElementById('centerBox').style.display='none';
 	document.getElementById('loginRegisterBox').style.display='none';
+	document.getElementById('SearchPreviousResponsesBox').style.display='none';
 }
 
 function showLoginRegister()
@@ -92,6 +93,24 @@ function showLoginRegister()
 
 	document.getElementById('greyOverlay').style.display='block';
 	document.getElementById('loginRegisterBox').style.display='block';
+}
+
+function showSearchPreviousResponsesBox()
+{
+	var boxWidth = 750;
+	var boxHeight = 600;
+	
+	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
+	var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
+
+	var xPos = (screenWidth - boxWidth) * 0.5;
+	var yPos = (screenHeight - boxHeight) * 0.5;
+
+	document.getElementById('SearchPreviousResponsesBox').style.left=xPos+'px';
+	document.getElementById('SearchPreviousResponsesBox').style.top=yPos+'px';
+
+	document.getElementById('greyOverlay').style.display='block';
+	document.getElementById('SearchPreviousResponsesBox').style.display='block';
 }
 
 function attachArrowMouseEvents(selector) {
@@ -185,6 +204,14 @@ $(document).ready(function(){
         $(domEle).height($(domEle).parent().height() - $("#responseForm").height());
 	});
 	
+	$("#SearchPreviousResponsesButton").click(showSearchPreviousResponsesBox);
+	
+	$("#searchPreviousResponsesQuery").keyup(function() {
+	    $.get("test.php", { query: $("#searchPreviousResponsesQuery").val() },
+		    function(data) {
+				$("#searchResponses").html(data);
+		});
+	});	
 	
 	$("#mainCircleSize").css("visibility", "visible");
  });

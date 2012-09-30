@@ -282,6 +282,7 @@ function outputForm($respID, $aIds, $button1Text, $button2Text) {
             
             <div class=\"formButtons\">
                 <p id=\"".$button1Text."Button\">".$button1Text."</p>
+                <p id=\"SearchPreviousResponsesButton\">Search Previous Responses</p>
                 <p id=\"".$button2Text."Button\">".$button2Text."</p>
             </div>
         </form>");
@@ -405,6 +406,40 @@ function validAncestors($aIds, $rId) {
 	<h1>Fork</h1>
     <p>To insert this response as a response to another statement, copy the text below and paste it into the textbox of the statement that you want to include this response as a response to.</p>
     <p id="centerBoxID">ID will be shown here</p>
+	<p>
+	<img src="closeButton2.png" class="closeButton" />
+	</p>
+</div>
+
+<div id="SearchPreviousResponsesBox"> 
+	<h1>Search Previous Responses</h1>
+    
+    <!--<form action="index.php" method="POST">-->
+        <p>
+            <input type="text" name="searchPreviousResponsesQuery" id="searchPreviousResponsesQuery" size="60">
+            <div id="searchResponses">
+                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
+                Math
+                </p>
+                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
+                Math
+                </p>
+                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
+                Math
+                </p>
+                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
+                Math
+                </p>
+                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
+                Math
+                </p>
+                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
+                Math
+                </p>
+            </div>
+        </p>
+    <!--</form>-->
+    
 	<p>
 	<img src="closeButton2.png" class="closeButton" />
 	</p>
