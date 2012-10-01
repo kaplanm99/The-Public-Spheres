@@ -226,48 +226,27 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
     
     if(($rPID == 0 || responseExists($rPID))&& strlen($rText) != 0 && $rIsAgree != -1) {
     
-        $pattern = '/^id_[0-9]+$/';
+        require('db/config.php');
+            
+        $mysqli = new mysqli($host, $username, $password, $db);                    
         
-        if(preg_match($pattern, $rText)) {
-            $mergeRID = substr($rText, 3);
-            $mergeRID = intval($mergeRID);
+        if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText) VALUES (?);")) {
+            $stmt->bind_param('s', $rText);
             
-            require('db/config.php');
-            
-            $mysqli = new mysqli($host, $username, $password, $db);                    
-            
-            if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId) VALUES (?,?,?);")) {
-                $stmt->bind_param('iii', $mergeRID, $rIsAgree, $rPID);
-                
-                $stmt->execute();
-            }
-                
-            $stmt->close();
-                
-            $mysqli->close();
-        } else {
-            require('db/config.php');
-            
-            $mysqli = new mysqli($host, $username, $password, $db);                    
-            
-            if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText) VALUES (?);")) {
-                $stmt->bind_param('s', $rText);
-                
-                if($stmt->execute()) {
-                    $newRID = $stmt->insert_id;
-                    $stmt->close();
-                    if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId) VALUES (?,?,?);")) {
-                        $stmt->bind_param('iii', $newRID, $rIsAgree, $rPID);
-                
-                        $stmt->execute();
-                    }
-                }
-                
+            if($stmt->execute()) {
+                $newRID = $stmt->insert_id;
                 $stmt->close();
+                if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId) VALUES (?,?,?);")) {
+                    $stmt->bind_param('iii', $newRID, $rIsAgree, $rPID);
+            
+                    $stmt->execute();
+                }
             }
-                
-            $mysqli->close();
+            
+            $stmt->close();
         }
+            
+        $mysqli->close();        
     }
 }
 
@@ -472,15 +451,6 @@ $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
 <body>
 
 <div id="greyOverlay" onClick="closeTop();"> 
-</div>
-
-<div id="centerBox"> 
-	<h1>Fork</h1>
-    <p>To insert this response as a response to another statement, copy the text below and paste it into the textbox of the statement that you want to include this response as a response to.</p>
-    <p id="centerBoxID">ID will be shown here</p>
-	<p>
-	<img src="closeButton2.png" class="closeButton" />
-	</p>
 </div>
 
 <div id="SearchPreviousResponsesBox"> 

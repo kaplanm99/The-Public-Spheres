@@ -174,9 +174,6 @@ class Responses {
             </div>
             <p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\">".$response->getResponseText()."
             </p>
-            <p onclick=\"showTop(".$response->getResponseID().");return false;\" class=\"forkIcon\">
-                <img src=\"fork.png\"><br/>Fork
-            </p>
             <p style=\"clear: both;\"></p>
             </div>");           
             

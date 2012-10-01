@@ -48,31 +48,9 @@ function changeBGC(el, ratio, typeIsAgree) {
 	el.style.backgroundColor = "rgb(" + Math.round(rgbArray[0]) + "," + Math.round(rgbArray[1]) + "," + Math.round(rgbArray[2]) + ")";
 }
 
-function showTop(responseID)
-{
-	document.getElementById('centerBoxID').innerHTML = "id_" + responseID;
-	
-	var boxWidth = 500;
-	var boxHeight = 240;
-	
-	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
-	var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
-
-	var xPos = (screenWidth - boxWidth) * 0.5;
-	var yPos = (screenHeight - boxHeight) * 0.5;
-
-	document.getElementById('centerBox').style.left=xPos+'px';
-	document.getElementById('centerBox').style.top=yPos+'px';
-
-	document.getElementById('greyOverlay').style.display='block';
-	document.getElementById('centerBox').style.display='block';
-}
-
-
 function closeTop()
 {
 	document.getElementById('greyOverlay').style.display='none';
-	document.getElementById('centerBox').style.display='none';
 	document.getElementById('loginRegisterBox').style.display='none';
 	document.getElementById('SearchPreviousResponsesBox').style.display='none';
 }
