@@ -9,7 +9,49 @@ if(isset($_POST["op"]) && $_POST["op"] == "logout" && isset($_SESSION['user'])) 
 require('user-man.php'); 
 
 $manage_user_result = manage_user();
- 
+
+
+if(isset($_POST["searchPreviousResponsePID"])&&isset($_POST["searchPreviousResponseRID"])&&isset($_POST["searchPreviousResponseIsAgree"]) && isset($_SESSION['user'])) {    
+    $searchPreviousResponseRID = strip_tags($_POST["searchPreviousResponseRID"]);
+    $searchPreviousResponseRID = trim($searchPreviousResponseRID);
+    
+    if(strlen($searchPreviousResponseRID) != 0) {
+        $searchPreviousResponseRID = intval($searchPreviousResponseRID);
+    }
+    else {
+        $searchPreviousResponseRID = -1;
+    }
+    
+    $searchPreviousResponseIsAgree = strip_tags($_POST["searchPreviousResponseIsAgree"]);
+    $searchPreviousResponseIsAgree = trim($searchPreviousResponseIsAgree);
+    
+    if($searchPreviousResponseIsAgree == "0" || $searchPreviousResponseIsAgree == "1" || $searchPreviousResponseIsAgree == "2" || $searchPreviousResponseIsAgree == "3") {
+        $searchPreviousResponseIsAgree = intval($searchPreviousResponseIsAgree);
+    } else {
+        $searchPreviousResponseIsAgree = -1;
+    }
+    
+    $searchPreviousResponsePID = strip_tags($_POST["searchPreviousResponsePID"]);
+    $searchPreviousResponsePID = trim($searchPreviousResponsePID);
+    $searchPreviousResponsePID = intval($searchPreviousResponsePID);
+    
+    if(($searchPreviousResponsePID == 0 || responseExists($searchPreviousResponsePID))&& $searchPreviousResponseRID != -1 && $searchPreviousResponseIsAgree != -1) {    
+		require('db/config.php');
+		
+		$mysqli = new mysqli($host, $username, $password, $db);                    
+		
+		if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId) VALUES (?,?,?);")) {
+			$stmt->bind_param('iii', $searchPreviousResponseRID, $searchPreviousResponseIsAgree, $searchPreviousResponsePID);
+			
+			$stmt->execute();
+		}
+			
+		$stmt->close();
+			
+		$mysqli->close();   
+    }
+} 
+
 if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($_SESSION['user'])) {    
     $rID = strip_tags($_POST["rID"]);
     $rID = trim($rID);
@@ -273,7 +315,7 @@ function ancestorStringNonZero($arr) {
 function outputForm($respID, $aIds, $button1Text, $button2Text) {
     if(isset($_SESSION['user'])) {
         print("        
-        <form id=\"responseForm\" name=\"input\" action=\"index.php?rId=$respID".ancestorStringNonZero($aIds)."\" method=\"post\">
+        <form id=\"responseForm\" action=\"index.php?rId=$respID".ancestorStringNonZero($aIds)."\" method=\"post\">
         
             <textarea id=\"rText\" name=\"rText\" class=\"textbox textboxSize\"></textarea>
             <input type=\"hidden\" id=\"rIsAgree\" name=\"rIsAgree\" value=\"0\" />
@@ -281,9 +323,9 @@ function outputForm($respID, $aIds, $button1Text, $button2Text) {
             <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"$respID\" />
             
             <div class=\"formButtons\">
-                <p id=\"".$button1Text."Button\">".$button1Text."</p>
+                <p id=\"SubmitResponse".$button1Text."Button\" class=\"".$button1Text."Button\">".$button1Text."</p>
                 <p id=\"SearchPreviousResponsesButton\">Search Previous Responses</p>
-                <p id=\"".$button2Text."Button\">".$button2Text."</p>
+                <p id=\"SubmitResponse".$button2Text."Button\" class=\"".$button2Text."Button\">".$button2Text."</p>
             </div>
         </form>");
     }
@@ -382,6 +424,36 @@ function validAncestors($aIds, $rId) {
     return true;
 }
 
+$rId = 0;
+
+if(isset($_GET["rId"])) {
+    $rId = strip_tags($_GET["rId"]);
+    $rId = trim($rId);
+    $rId = intval($rId);
+    
+    if($rId != 0) {
+        if(isset($_GET["aIds"])) {
+            $aIds = $_GET["aIds"];
+            
+            foreach ($aIds as &$temp_aId) {
+                $temp_aId = strip_tags($temp_aId);
+                $temp_aId = trim($temp_aId);
+                $temp_aId = intval($temp_aId);
+            }
+        
+            unset($temp_aId);
+            
+            if(!validAncestors($aIds, $rId)) {
+                $rId = 0;
+            }
+        } else{
+            $rId = 0;
+        }
+    }
+}
+
+require('CurrentArgument.php');
+$currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
 ?>
 
 <html>
@@ -418,25 +490,32 @@ function validAncestors($aIds, $rId) {
         <p>
             <input type="text" name="searchPreviousResponsesQuery" id="searchPreviousResponsesQuery" size="60">
             <div id="searchResponses">
-                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
-                Math
-                </p>
-                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
-                Math
-                </p>
-                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
-                Math
-                </p>
-                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
-                Math
-                </p>
-                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
-                Math
-                </p>
-                <p id="25" onclick="goToRID(this, event, 25 ,'&amp;aIds[]=0');" class="searchResponse">
-                Math
-                </p>
             </div>
+            
+            <?php
+            
+            print("<form id=\"searchPreviousResponseForm\" action=\"index.php?rId=".$rId."".ancestorStringNonZero($aIds)."\" method=\"post\">
+        
+            <input type=\"hidden\" id=\"searchPreviousResponsePID\" name=\"searchPreviousResponsePID\" value=\"".$rId."\" />");
+            
+            ?>
+
+            <input type="hidden" id="searchPreviousResponseRID" name="searchPreviousResponseRID" value="-1">
+            <input type="hidden" id="searchPreviousResponseIsAgree" name="searchPreviousResponseIsAgree" value="-1">
+            
+                <div class="formButtons">
+                <?php
+                    if($currentArgument->getArgumentIsAgree() == 3 || $rId == 0) {
+                        print("<p id=\"SearchPreviousResponsesCategoryButton\" class=\"CategoryButton\">Category</p>
+                        <p id=\"SearchPreviousResponsesDiscussionButton\" class=\"DiscussionButton\">Discussion</p>");
+                    } else {
+                        print("<p id=\"SearchPreviousResponsesAgreeButton\" class=\"AgreeButton\">Agree</p>
+                        <p id=\"SearchPreviousResponsesDisagreeButton\" class=\"DisagreeButton\">Disagree</p>");
+                    }      
+                ?>
+                </div>
+            
+            </form>
         </p>
     <!--</form>-->
     
@@ -496,34 +575,6 @@ function validAncestors($aIds, $rId) {
 </div>
 
 <?php
-if(isset($_GET["rId"])) {
-    $rId = strip_tags($_GET["rId"]);
-    $rId = trim($rId);
-    $rId = intval($rId);
-    
-    if($rId != 0) {
-        if(isset($_GET["aIds"])) {
-            $aIds = $_GET["aIds"];
-            
-            foreach ($aIds as &$temp_aId) {
-                $temp_aId = strip_tags($temp_aId);
-                $temp_aId = trim($temp_aId);
-                $temp_aId = intval($temp_aId);
-            }
-        
-            unset($temp_aId);
-            
-            if(!validAncestors($aIds, $rId)) {
-                $rId = 0;
-            }
-        } else{
-            $rId = 0;
-        }
-    }
-} else {
-    $rId = 0;
-}
-
 if($rId != 0) {
 ?>
 
@@ -595,34 +646,15 @@ if($rId != 0) {
             print("$parentsOutputText");
         }
         
-        require('db/config.php');
-        
-        $mysqli = new mysqli($host, $username, $password, $db);                    
-        if ($stmt = $mysqli->prepare("SELECT r.responseText, c.isAgree FROM Responses r, (SELECT responseId, isAgree FROM Context WHERE responseId = ? AND parentId = ?) c WHERE c.responseId = r.responseId;")) {
-            $stmt->bind_param('ii', $rId, $aIds[count($aIds)-1]);
-            $stmt->execute();
-            $stmt->bind_result($statementText, $statementIsAgree);
-            
-            // fetch values
-            if($stmt->fetch()) {
-                print("<div id=\"innerCircle\" class=\"circle circleSize\"><h2 class=\"statement statementSize\">$statementText</h2>");
+        print("<div id=\"innerCircle\" class=\"circle circleSize\"><h2 class=\"statement statementSize\">".$currentArgument->getArgumentText()."</h2>");
                 
-                //if(count($aIds) > 1) {
-                    if($statementIsAgree == 1) {
-                        print("<p class=\"agreeLabel\">Agree</p>");
-                    } elseif($statementIsAgree == 0){
-                        print("<p class=\"disagreeLabel\">Disagree</p>");
-                    }
-                //}
-            }
-            
-            $stmt->close();
+        if($currentArgument->getArgumentIsAgree() == 1) {
+            print("<p class=\"agreeLabel\">Agree</p>");
+        } elseif($currentArgument->getArgumentIsAgree() == 0){
+            print("<p class=\"disagreeLabel\">Disagree</p>");
         }
         
-        //Close the database connection
-        $mysqli->close();
-        
-        if($statementIsAgree == 3) {
+        if($currentArgument->getArgumentIsAgree() == 3) {
             outputCategoryContents($rId, $aIds);
         } else {
             outputDiscussionContents($rId, $aIds);

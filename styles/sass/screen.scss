@@ -186,7 +186,7 @@ body {
 	margin-bottom: 0px;
 }
 
-#AgreeButton {
+.AgreeButton {
 	float:left;
 	width:70px;
 	background-color:#b6d7a8;
@@ -197,7 +197,7 @@ body {
 	cursor:pointer;
 }
 
-#DisagreeButton {
+.DisagreeButton {
 	float:right;
 	width:70px;
 	background-color:#ea9999;
@@ -208,7 +208,7 @@ body {
 	cursor:pointer;
 }
 
-#CategoryButton {
+.CategoryButton {
 	float:left;
 	width:70px;
 	background-color:#99B6EA;
@@ -219,7 +219,7 @@ body {
 	cursor:pointer;
 }
 
-#DiscussionButton {
+.DiscussionButton {
 	float:right;
 	width:70px;
 	background-color:#EAC799;
@@ -363,7 +363,7 @@ Sizes
 	padding:20px;
 	
 	width: 750px;
-	height: 600px;
+	height: 520px;
 	
 	z-index: 501;
 	

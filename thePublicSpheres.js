@@ -98,7 +98,7 @@ function showLoginRegister()
 function showSearchPreviousResponsesBox()
 {
 	var boxWidth = 750;
-	var boxHeight = 600;
+	var boxHeight = 560;
 	
 	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
 	var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
@@ -132,28 +132,50 @@ function attachArrowMouseEvents(selector) {
 }
 
 $(document).ready(function(){
-  $("#AgreeButton").click(function(event){
+  $("#SubmitResponseAgreeButton").click(function(event){
 	 $("#rIsAgree").attr("value",1);
 	 $("#responseForm").submit();
    });
    
-   $("#logoutLink").click(function(event){
-	 $("#logoutForm").submit();
-   });
-   
-   $("#DisagreeButton").click(function(event){
+   $("#SubmitResponseDisagreeButton").click(function(event){
 	 $("#rIsAgree").attr("value",0);
 	 $("#responseForm").submit();
    });
 
-	$("#DiscussionButton").click(function(event){
+	$("#SubmitResponseDiscussionButton").click(function(event){
 	 $("#rIsAgree").attr("value",2);
 	 $("#responseForm").submit();
    });
    
-   $("#CategoryButton").click(function(event){
+   $("#SubmitResponseCategoryButton").click(function(event){
 	 $("#rIsAgree").attr("value",3);
 	 $("#responseForm").submit();
+   });
+   
+   //
+   
+   $("#SearchPreviousResponsesAgreeButton").click(function(event){
+	 $("#searchPreviousResponseIsAgree").attr("value",1);
+	 $("#searchPreviousResponseForm").submit();
+   });
+   
+   $("#SearchPreviousResponsesDisagreeButton").click(function(event){
+	 $("#searchPreviousResponseIsAgree").attr("value",0);
+	 $("#searchPreviousResponseForm").submit();
+   });
+
+	$("#SearchPreviousResponsesDiscussionButton").click(function(event){
+	 $("#searchPreviousResponseIsAgree").attr("value",2);
+	 $("#searchPreviousResponseForm").submit();
+   });
+   
+   $("#SearchPreviousResponsesCategoryButton").click(function(event){
+	 $("#searchPreviousResponseIsAgree").attr("value",3);
+	 $("#searchPreviousResponseForm").submit();
+   });
+   
+   $("#logoutLink").click(function(event){
+	 $("#logoutForm").submit();
    });
    
    $("#greyOverlay").click(closeTop);
@@ -210,6 +232,21 @@ $(document).ready(function(){
 	    $.get("test.php", { query: $("#searchPreviousResponsesQuery").val() },
 		    function(data) {
 				$("#searchResponses").html(data);
+				
+				$(".searchResponse").click(function(event){
+	 
+				 $(".searchResponse").each(function (index, domEle) {
+					$(domEle).css("borderWidth","1px");
+					$(domEle).css("borderColor","#000000");
+				 });
+				 
+				 
+				 $(this).css("borderWidth","5px");
+				 $(this).css("borderColor","#708090");
+				 var searchPreviousResponseRID = $(this).attr("id");
+				 
+				 $("#searchPreviousResponseRID").attr("value",searchPreviousResponseRID);
+			    });
 		});
 	});	
 	
