@@ -29,7 +29,7 @@ class CurrentArgument {
     }
     
     public function getArgumentIsAgree() {           
-        return $this->argumentIsAgree;            
+        return intval($this->argumentIsAgree);            
     }
     
 }

@@ -583,7 +583,15 @@ if($rId != 0) {
                     $stmt->bind_result($parentText, $parentIsAgree);
                     
                     if($stmt->fetch()) {
-                        $anotherCircle = "<div class=\"circle circleSize\" onclick=\"goToRID(this, event, $aId ,'".ancestorString($temp_aIds)."');\"><h2 class=\"statement statementSize\" onclick=\"goToRID(this, event, $aId,'".ancestorString($temp_aIds)."');\">$parentText</h2>";
+                        $anotherCircle = "<div class=\"circle circleSize";
+                        
+                        if($parentIsAgree == 1) {
+                            $anotherCircle = $anotherCircle . " agreeCircle";
+                        } elseif($parentIsAgree == 0){
+                            $anotherCircle = $anotherCircle . " disagreeCircle";
+                        }
+                        
+                        $anotherCircle = $anotherCircle . "\" onclick=\"goToRID(this, event, $aId ,'".ancestorString($temp_aIds)."');\"><h2 class=\"statement statementSize\" onclick=\"goToRID(this, event, $aId,'".ancestorString($temp_aIds)."');\">$parentText</h2>";
                         
                         $tempAID = $aId."";
                         array_push($temp_aIds, $tempAID);
@@ -616,7 +624,15 @@ if($rId != 0) {
             print("$parentsOutputText");
         }
         
-        print("<div id=\"innerCircle\" class=\"circle circleSize\"><h2 class=\"statement statementSize\">".$currentArgument->getArgumentText()."</h2>");
+        print("<div id=\"innerCircle\" class=\"circle circleSize");
+        
+        if($currentArgument->getArgumentIsAgree() == 1) {
+            print(" agreeCircle");
+        } elseif($currentArgument->getArgumentIsAgree() == 0){
+            print(" disagreeCircle");
+        }
+        
+        print("\"><h2 class=\"statement statementSize\">".$currentArgument->getArgumentText()."</h2>");
                 
         if($currentArgument->getArgumentIsAgree() == 1) {
             print("<p class=\"agreeLabel\">Agree</p>");

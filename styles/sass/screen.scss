@@ -35,10 +35,29 @@ body {
 	text-align:center;
 }
 
+.agreeCircle {
+	border-color:#050;
+	background-color:#f3fff3;
+}
+
+.disagreeCircle {
+	border-color: #700;
+	background-color:#fff3f3;
+}
+
+.agreeCircle h2 {
+	color:#050;
+}
+
+.disagreeCircle h2 {
+	color:#700;
+}
+
 .AgreeLabel {
 	position: absolute;
 	top: -10px;
 	left: 25px;
+	color:#050;
 	background-color: #F7F7F7;
 }
 
@@ -46,6 +65,7 @@ body {
 	position: absolute;
 	top: -10px;
 	right: 25px;
+	color: #700;
 	background-color: #F7F7F7;
 }
 

@@ -45,19 +45,19 @@ class Responses {
     private function agreeDisagreeRatio($responseID) {
         require('db/config.php');
         $mysqli2 = new mysqli($host, $username, $password, $db);
-            
-        if ($stmt2 = $mysqli2->prepare("SELECT COUNT(c.responseId) FROM Context c WHERE c.parentId = ? AND c.isAgree = 1;")) {
-            $stmt2->bind_param('i', $responseID);
+        
+        $tempIsAgree = 1;
+        
+        if ($stmt2 = $mysqli2->prepare("SELECT COUNT(c.responseId) FROM Context c WHERE c.parentId = ? AND c.isAgree = ?;")) {
+            $stmt2->bind_param('ii', $responseID, $tempIsAgree);
             $stmt2->execute();
             $stmt2->bind_result($agrCount);
             
             $stmt2->fetch();
-        }
-
-        $stmt2->close();
         
-        if ($stmt2 = $mysqli2->prepare("SELECT COUNT(c.responseId) FROM Context c WHERE c.parentId = ? AND c.isAgree = 0;")) {
-            $stmt2->bind_param('i', $responseID);
+            $tempIsAgree = 0;
+        
+            $stmt2->bind_param('ii', $responseID, $tempIsAgree);
             $stmt2->execute();
             $stmt2->bind_result($disagrCount);
             
