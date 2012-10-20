@@ -172,7 +172,7 @@ class Responses {
             print("</form>
                 
             </div>
-            <p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\">".$response->getResponseText()."
+            <p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\">".str_replace('\\', "", $response->getResponseText())."
             </p>
             <p style=\"clear: both;\"></p>
             </div>");           

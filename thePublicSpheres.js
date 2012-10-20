@@ -110,12 +110,12 @@ function attachArrowMouseEvents(selector) {
 }
 
 $(document).ready(function(){
-  $("#SubmitResponseAgreeButton").click(function(event){
+  $("#SubmitResponseSupportButton").click(function(event){
 	 $("#rIsAgree").attr("value",1);
 	 $("#responseForm").submit();
    });
    
-   $("#SubmitResponseDisagreeButton").click(function(event){
+   $("#SubmitResponseOpposeButton").click(function(event){
 	 $("#rIsAgree").attr("value",0);
 	 $("#responseForm").submit();
    });
@@ -132,12 +132,12 @@ $(document).ready(function(){
    
    //
    
-   $("#SearchPreviousResponsesAgreeButton").click(function(event){
+   $("#SearchPreviousResponsesSupportButton").click(function(event){
 	 $("#searchPreviousResponseIsAgree").attr("value",1);
 	 $("#searchPreviousResponseForm").submit();
    });
    
-   $("#SearchPreviousResponsesDisagreeButton").click(function(event){
+   $("#SearchPreviousResponsesOpposeButton").click(function(event){
 	 $("#searchPreviousResponseIsAgree").attr("value",0);
 	 $("#searchPreviousResponseForm").submit();
    });
@@ -201,7 +201,7 @@ $(document).ready(function(){
 	});
 	
 	$(".circleColumnSize").each(function (index, domEle) {
-        $(domEle).height($(domEle).parent().height() - $("#responseForm").height());
+        $(domEle).height($(domEle).parent().height() - $("#responseForm").height() - $(".titleSize").outerHeight(true) - 1);
 	});
 	
 	$("#SearchPreviousResponsesButton").click(showSearchPreviousResponsesBox);

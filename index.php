@@ -318,7 +318,7 @@ function outputDiscussionContents($respID, $aIds) {
     print("<div class=\"circleResponses circleResponsesSize\">");
 
     require('Responses.php');
-    $agreeResponses = new Responses("Agree", 1, $respID, $aIds);
+    $agreeResponses = new Responses("Support", 1, $respID, $aIds);
     $agreeResponses->generateResponses();
     $agreeResponses->outputResponses();
                                 
@@ -326,11 +326,11 @@ function outputDiscussionContents($respID, $aIds) {
     <div class=\"dividingLine dividingLineSize\"></div>
     ");
     
-    $disagreeResponses = new Responses("Disagree", 0, $respID, $aIds);
+    $disagreeResponses = new Responses("Oppose", 0, $respID, $aIds);
     $disagreeResponses->generateResponses();
     $disagreeResponses->outputResponses();
     
-    outputForm($respID, $aIds, "Agree", "Disagree");
+    outputForm($respID, $aIds, "Support", "Oppose");
 }
 
 function outputCategoryContents($respID, $aIds) {
@@ -479,8 +479,8 @@ $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
                         print("<p id=\"SearchPreviousResponsesCategoryButton\" class=\"CategoryButton\">Category</p>
                         <p id=\"SearchPreviousResponsesDiscussionButton\" class=\"DiscussionButton\">Discussion</p>");
                     } else {
-                        print("<p id=\"SearchPreviousResponsesAgreeButton\" class=\"AgreeButton\">Agree</p>
-                        <p id=\"SearchPreviousResponsesDisagreeButton\" class=\"DisagreeButton\">Disagree</p>");
+                        print("<p id=\"SearchPreviousResponsesSupportButton\" class=\"SupportButton\">Support</p>
+                        <p id=\"SearchPreviousResponsesOpposeButton\" class=\"OpposeButton\">Oppose</p>");
                     }      
                 ?>
                 </div>
@@ -586,12 +586,20 @@ if($rId != 0) {
                         $anotherCircle = "<div class=\"circle circleSize";
                         
                         if($parentIsAgree == 1) {
-                            $anotherCircle = $anotherCircle . " agreeCircle";
+                            $anotherCircle = $anotherCircle . " supportCircle";
                         } elseif($parentIsAgree == 0){
-                            $anotherCircle = $anotherCircle . " disagreeCircle";
+                            $anotherCircle = $anotherCircle . " opposeCircle";
                         }
                         
-                        $anotherCircle = $anotherCircle . "\" onclick=\"goToRID(this, event, $aId ,'".ancestorString($temp_aIds)."');\"><h2 class=\"statement statementSize\" onclick=\"goToRID(this, event, $aId,'".ancestorString($temp_aIds)."');\">$parentText</h2>";
+                        $anotherCircle = $anotherCircle . "\" onclick=\"goToRID(this, event, $aId ,'".ancestorString($temp_aIds)."');\"><h2 class=\"statement statementSize";
+                        
+                        if($parentIsAgree == 1) {
+                            $anotherCircle = $anotherCircle . " supportCircleTitle";
+                        } elseif($parentIsAgree == 0){
+                            $anotherCircle = $anotherCircle . " opposeCircleTitle";
+                        }
+                        
+                        $anotherCircle = $anotherCircle ."\" onclick=\"goToRID(this, event, $aId,'".ancestorString($temp_aIds)."');\">".str_replace('\\', "", $parentText)."</h2>";
                         
                         $tempAID = $aId."";
                         array_push($temp_aIds, $tempAID);
@@ -599,9 +607,9 @@ if($rId != 0) {
                         $parentLabel = "";
                         
                         if($parentIsAgree == 1) {
-                            $parentLabel = "<p class=\"agreeLabel\">Agree</p>";
+                            $parentLabel = "<p class=\"supportLabel\">Support</p>";
                         } elseif($parentIsAgree == 0){
-                            $parentLabel = "<p class=\"disagreeLabel\">Disagree</p>";
+                            $parentLabel = "<p class=\"opposeLabel\">Oppose</p>";
                         } elseif($parentIsAgree == 2) {
                             $hasParents = false;
                         }
@@ -627,17 +635,25 @@ if($rId != 0) {
         print("<div id=\"innerCircle\" class=\"circle circleSize");
         
         if($currentArgument->getArgumentIsAgree() == 1) {
-            print(" agreeCircle");
+            print(" supportCircle");
         } elseif($currentArgument->getArgumentIsAgree() == 0){
-            print(" disagreeCircle");
+            print(" opposeCircle");
         }
         
-        print("\"><h2 class=\"statement statementSize\">".$currentArgument->getArgumentText()."</h2>");
+        print("\"><h2 class=\"statement statementSize");
+        
+        if($currentArgument->getArgumentIsAgree() == 1) {
+            print(" supportCircleTitle");
+        } elseif($currentArgument->getArgumentIsAgree() == 0){
+            print(" opposeCircleTitle");
+        }
+        
+        print("\">".str_replace('\\', "", $currentArgument->getArgumentText())."</h2>");
                 
         if($currentArgument->getArgumentIsAgree() == 1) {
-            print("<p class=\"agreeLabel\">Agree</p>");
+            print("<p class=\"supportLabel\">Support</p>");
         } elseif($currentArgument->getArgumentIsAgree() == 0){
-            print("<p class=\"disagreeLabel\">Disagree</p>");
+            print("<p class=\"opposeLabel\">Oppose</p>");
         }
         
         if($currentArgument->getArgumentIsAgree() == 3) {
