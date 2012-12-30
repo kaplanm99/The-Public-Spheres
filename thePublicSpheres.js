@@ -109,6 +109,13 @@ function attachArrowMouseEvents(selector) {
    });
 }
 
+function submitVote(selector, theVote) {
+    if(theVote == 0 || theVote == 1) {
+        $("#"+selector+">form>.vote").attr("value",theVote);
+        $("#"+selector+">form").submit();
+    }
+}
+
 $(document).ready(function(){
   $("#SubmitResponseSupportButton").click(function(event){
 	 $("#rIsAgree").attr("value",1);
@@ -161,7 +168,8 @@ $(document).ready(function(){
    
    attachArrowMouseEvents("upArrow");
    attachArrowMouseEvents("downArrow");
-   
+  
+  /*  
   $(".forkIcon").mouseover(function(){
 	 $(this).children('img').attr("src", "forkHighlighted.png");
    });
@@ -169,6 +177,7 @@ $(document).ready(function(){
    $(".forkIcon").mouseout(function(){
 	 $(this).children('img').attr("src", "fork.png");
    });
+  */ 
    
    $("#loginRegisterLink").click(showLoginRegister);
    
@@ -192,9 +201,11 @@ $(document).ready(function(){
         $(domEle).height($(domEle).parent().height() - ($(domEle).parent().children(".statement").height()+9));
 	});
 
-	$(".responseP").each(function (index, domEle) {
+	/*
+    $(".responseP").each(function (index, domEle) {
         $(domEle).width($(domEle).parent().width()-67);
 	});
+    */
 	
 	$(".dividingLineSize").each(function (index, domEle) {
         $(domEle).height($(domEle).parent().height() - $("#responseForm").height());

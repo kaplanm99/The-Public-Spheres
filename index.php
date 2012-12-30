@@ -40,8 +40,8 @@ if(isset($_POST["searchPreviousResponsePID"])&&isset($_POST["searchPreviousRespo
 		
 		$mysqli = new mysqli($host, $username, $password, $db);                    
 		
-		if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId) VALUES (?,?,?);")) {
-			$stmt->bind_param('iii', $searchPreviousResponseRID, $searchPreviousResponseIsAgree, $searchPreviousResponsePID);
+		if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
+			$stmt->bind_param('iiis', $searchPreviousResponseRID, $searchPreviousResponseIsAgree, $searchPreviousResponsePID, $_SESSION['user']);
 			
 			$stmt->execute();
 		}
@@ -104,31 +104,21 @@ if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($
                     if($stmt->execute()) {
                         $stmt->close();
                         
-                        if ($stmt = $mysqli->prepare("SELECT (SELECT COUNT(*) FROM Votes WHERE responseId = ? AND parentId = ? AND vote = 1) as upVotes, (SELECT COUNT(*) FROM Votes WHERE responseId = ? AND parentId = ? AND vote = 0) as downVotes")) {
-                            $stmt->bind_param('iiii', $rID, $rPID, $rID, $rPID);
-                            $stmt->execute();
-                            $stmt->bind_result($upVotes, $downVotes);
-                            
-                            if($stmt->fetch()) {
-                                $stmt->close();
-                                
-                                $newScore = $upVotes-$downVotes;
-                            
-                                if ($stmt = $mysqli->prepare("UPDATE Context SET score = ? WHERE responseId = ? AND parentId = ?")) {
-                                    $stmt->bind_param('iii', $newScore, $rID, $rPID);
-                                    $stmt->execute();
-                                    $stmt->close();
-                                }
-                                
-                            }
+                        if($boolVote == 1) {
+                            $query = "UPDATE Context SET yesVotes=(SELECT COUNT(*) FROM Votes WHERE Votes.responseId = ? AND Votes.parentId = ? AND vote = 1 AND Context.responseId = Votes.responseId AND  Context.parentId = Votes.parentId) WHERE Context.responseId = ? AND Context.parentId = ?";
                         }
                         else {
-                            $stmt->close();
+                            $query = "UPDATE Context SET noVotes=(SELECT COUNT(*) FROM Votes WHERE Votes.responseId = ? AND Votes.parentId = ? AND vote = 0 AND Context.responseId = Votes.responseId AND  Context.parentId = Votes.parentId) WHERE Context.responseId = ? AND Context.parentId = ?";
                         }
+                        
+                        if (($boolVote == 1 || $boolVote == 0) && $stmt = $mysqli->prepare($query)) {
+                            $stmt->bind_param('iiii', $rID, $rPID, $rID, $rPID);
+                            $stmt->execute();
+                        }
+                        
                     }
-                    else {
-                        $stmt->close();
-                    }
+                    
+                    $stmt->close();
                 }
             }
             else {
@@ -230,14 +220,14 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
             
         $mysqli = new mysqli($host, $username, $password, $db);                    
         
-        if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText) VALUES (?);")) {
-            $stmt->bind_param('s', $rText);
+        if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText, user) VALUES (?,?);")) {
+            $stmt->bind_param('ss', $rText, $_SESSION['user']);
             
             if($stmt->execute()) {
                 $newRID = $stmt->insert_id;
                 $stmt->close();
-                if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId) VALUES (?,?,?);")) {
-                    $stmt->bind_param('iii', $newRID, $rIsAgree, $rPID);
+                if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
+                    $stmt->bind_param('iiis', $newRID, $rIsAgree, $rPID, $_SESSION['user']);
             
                     $stmt->execute();
                 }

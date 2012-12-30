@@ -87,10 +87,10 @@ class Responses {
 
         $mysqli = new mysqli($host, $username, $password, $db);
         
-        if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText, c.score FROM Responses r, (SELECT responseId, score FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId ORDER BY c.score DESC;")) {
+        if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText, (c.yesVotes - c.noVotes) AS voteDifference, c.yesVotes, c.noVotes FROM Responses r, (SELECT responseId, score, yesVotes, noVotes FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId ORDER BY voteDifference DESC;")) {
             $stmt->bind_param('ii', $this->respID, $this->typeIsAgree);
             $stmt->execute();
-            $stmt->bind_result($responseID, $responseText, $responseScore);
+            $stmt->bind_result($responseID, $responseText, $responseScore, $responseYesVotes, $responseNoVotes);
             
             while ($stmt->fetch()) {
             
@@ -114,7 +114,7 @@ class Responses {
                     
                     $mysqli2->close();
                 }
-                $this->responseArray[] = new Response($responseID, $responseText, $responseScore, $responseVote);
+                $this->responseArray[] = new Response($responseID, $responseText, $responseScore, $responseYesVotes, $responseNoVotes, $responseVote);
             }
             
             $stmt->close();
@@ -138,7 +138,8 @@ class Responses {
                 $arrJS = $this->arrayPHPToJS($this->aIds,$this->respID);
             }    
              
-            print("<div id=\"".$response->getResponseID()."\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\" class=\"response\">
+            print("<div id=\"".$response->getResponseID()."\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\" class=\"response\">");
+            /*
             <div class=\"arrowIcons\">
             
             
@@ -172,9 +173,20 @@ class Responses {
             print("</form>
                 
             </div>
+            */
+            print ("
             <p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\">".str_replace('\\', "", $response->getResponseText())."
             </p>
-            <p style=\"clear: both;\"></p>
+            <form name=\"input\" action=\"index.php?rId=".$this->respID."".$this->ancestorStringNonZero($this->aIds)."\" method=\"post\">
+                <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"".$this->respID."\" />
+                <input type=\"hidden\" id=\"rID\" name=\"rID\" value=\"".$response->getResponseID()."\" />
+                <input type=\"hidden\" class=\"vote\" name=\"vote\" value=\"-1\" />
+                <p class=\"constructive\">
+                    Is this argument constructive?
+                    <img src=\"yes.png\" class=\"constructiveButton yesButton\" onclick=\"submitVote(".$response->getResponseID().", 1);\" />(".$response->getResponseYesVotes().")
+                    <img src=\"no.png\" class=\"constructiveButton noButton\" onclick=\"submitVote(".$response->getResponseID().", 0);\" />(".$response->getResponseNoVotes().")
+                </p>
+            </form>
             </div>");           
             
             if($this->typeIsAgree == 0 || $this->typeIsAgree == 1 || $this->typeIsAgree == 2) {

@@ -40,6 +40,18 @@ body {
 	background-color:#f3fff3;
 }
 
+.constructiveButton{
+    position: relative;
+    top: 3px;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.constructive{
+    padding-bottom:5px;
+    clear: both;
+}
+
 .opposeCircle {
 	border-color: #700;
 	background-color:#fff3f3;
@@ -55,10 +67,11 @@ body {
 
 .SupportLabel {
 	position: absolute;
-	top: -10px;
+	top: -5px;
 	left: 25px;
 	color:#050;
 	background-color: #F7F7F7;
+    font-size:12px;
 }
 
 .OpposeLabel {
@@ -463,7 +476,8 @@ Sizes
 
 .responseP {
 	float: left;
-	padding:5px
+	padding:5px;
+    width:435px;
 }
 
 .responseFormPlaceholder {
