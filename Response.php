@@ -5,15 +5,15 @@
 class Response {
 
     private $responseID;
-    private $responseText;
+    private $responseSubpoints;
     private $responseScore;
     private $responseYesVotes;
     private $responseNoVotes;
     private $responseVote;
     
-    function __construct($responseID, $responseText, $responseScore, $responseYesVotes, $responseNoVotes, $responseVote) {     
+    function __construct($responseID, $responseSubpoints, $responseScore, $responseYesVotes, $responseNoVotes, $responseVote) {     
         $this->responseID = $responseID;
-        $this->responseText = $responseText;
+        $this->responseSubpoints = $responseSubpoints;
         $this->responseScore = $responseScore;
         $this->responseYesVotes = $responseYesVotes;
         $this->responseNoVotes = $responseNoVotes;
@@ -28,12 +28,12 @@ class Response {
         return $this->responseID;            
     }
     
-    public function setResponseText($responseText) {
-        $this->responseText = $responseText;
+    public function setResponseSubpoints($responseSubpoints) {
+        $this->responseSubpoints = $responseSubpoints;
     }       
 
-    public function getResponseText() {           
-        return $this->responseText;            
+    public function getResponseSubpoints() {           
+        return $this->responseSubpoints;            
     }
 
     public function setResponseScore($responseScore) {

@@ -20,6 +20,23 @@ class Responses {
         $this->responseArray = array();
     }
     
+    private function outputSubpoints($subpoints) {
+        $output = "";
+        $temp = 0;
+        
+        foreach ($subpoints as &$subpoint) {
+            if($temp == 0) {
+                $output = $output . $subpoint;
+                $temp = 1;
+            }
+            else {
+                $output = $output . " <br/><span class=\"subpointLine\" > </span><br/> "  . $subpoint;
+            }
+        }
+        
+        return $output;
+    }
+    
     private function arrayPHPToJS($arr, $curRID) {
         $jsArr = "";
         
@@ -87,14 +104,36 @@ class Responses {
 
         $mysqli = new mysqli($host, $username, $password, $db);
         
-        if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText, (c.yesVotes - c.noVotes) AS voteDifference, c.yesVotes, c.noVotes FROM Responses r, (SELECT responseId, score, yesVotes, noVotes FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId ORDER BY voteDifference DESC;")) {
+        if ($stmt = $mysqli->prepare("SELECT r.responseId, (c.yesVotes - c.noVotes) AS voteDifference, c.yesVotes, c.noVotes FROM Responses r, (SELECT responseId, score, yesVotes, noVotes FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId ORDER BY voteDifference DESC;")) {
             $stmt->bind_param('ii', $this->respID, $this->typeIsAgree);
             $stmt->execute();
-            $stmt->bind_result($responseID, $responseText, $responseScore, $responseYesVotes, $responseNoVotes);
+            $stmt->bind_result($responseID, $responseScore, $responseYesVotes, $responseNoVotes);
             
             while ($stmt->fetch()) {
             
                 $responseVote = -1;
+                
+                $responseSubpoints = array();
+                
+                require('db/config.php');
+
+                $mysqli3 = new mysqli($host, $username, $password, $db);
+                
+                if ($stmt3 = $mysqli3->prepare("SELECT s.subpointText FROM ResponseSubpoints rs, Subpoints s WHERE rs.responseId = ? AND rs.subpointId = s.subpointId ORDER BY rs.position ASC;")) {
+                    $stmt3->bind_param('i', $responseID);
+                    $stmt3->execute();
+                    $stmt3->bind_result($subpointText);
+                
+                    while($stmt3->fetch()) {
+                        
+                        $responseSubpoints[] = str_replace('\\', "", $subpointText);
+                        
+                    }
+                        
+                    $stmt3->close();
+                }
+                
+                $mysqli3->close();
                 
                 if(isset($_SESSION['user'])) {
                     
@@ -114,7 +153,8 @@ class Responses {
                     
                     $mysqli2->close();
                 }
-                $this->responseArray[] = new Response($responseID, $responseText, $responseScore, $responseYesVotes, $responseNoVotes, $responseVote);
+                
+                $this->responseArray[] = new Response($responseID, $responseSubpoints, $responseScore, $responseYesVotes, $responseNoVotes, $responseVote);
             }
             
             $stmt->close();
@@ -125,8 +165,14 @@ class Responses {
     
     public function outputResponses() {
         
+        if($this->type == "Support" || $this->type == "Neutral" || $this->type == "Oppose") {
+            print("<div class=\"".$this->type."CircleColumn threeCircleColumnSize\">");
+        }
+        else {
+            print("<div class=\"".$this->type."CircleColumn twoCircleColumnSize\">");
+        }
+        
         print("    
-        <div class=\"".$this->type."CircleColumn circleColumnSize\">
             <h3 class=\"".$this->type."Title titleSize\">".$this->type."</h3>
             <div class=\"responses responsesSize\">");
         
@@ -139,52 +185,34 @@ class Responses {
             }    
              
             print("<div id=\"".$response->getResponseID()."\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\" class=\"response\">");
-            /*
-            <div class=\"arrowIcons\">
             
-            
-                <form style=\"float:left;\" name=\"input\" action=\"index.php?rId=".$this->respID."".$this->ancestorStringNonZero($this->aIds)."\" method=\"post\">
-                
-                    <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"".$this->respID."\" />
-                    <input type=\"hidden\" id=\"rID\" name=\"rID\" value=\"".$response->getResponseID()."\" />
-                    <input type=\"hidden\" name=\"vote\" value=\"1\" />");
-            
-            if($response->getResponseVote() == 1){
-                print("<input type=\"image\" src=\"upArrowDepressed.png\" class=\"upArrowDepressed arrow\">");
-            }
-            else {
-                print("<input type=\"image\" src=\"upArrow.png\" class=\"upArrow arrow\">");
-            }
-            
-            print("</form>
-                " . $response->getResponseScore() . "
-                <form style=\"float:left;\" name=\"input\" action=\"index.php?rId=".$this->respID."".$this->ancestorStringNonZero($this->aIds)."\" method=\"post\">
-                    <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"".$this->respID."\" />
-                    <input type=\"hidden\" id=\"rID\" name=\"rID\" value=\"".$response->getResponseID()."\" />
-                    <input type=\"hidden\" name=\"vote\" value=\"-1\" />");
-            
-            if($response->getResponseVote() == 0){
-                print("<input type=\"image\" src=\"downArrowDepressed.png\" class=\"downArrowDepressed arrow\">");
-            }
-            else {
-                print("<input type=\"image\" src=\"downArrow.png\" class=\"downArrow arrow\">");
-            }
-            
-            print("</form>
-                
-            </div>
-            */
             print ("
-            <p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\">".str_replace('\\', "", $response->getResponseText())."
+            <p class=\"responseP\" onclick=\"goToRID(this, event, ".$response->getResponseID()." ,'$arrJS');\">". $this->outputSubpoints($response->getResponseSubpoints()) ."
             </p>
-            <form name=\"input\" action=\"index.php?rId=".$this->respID."".$this->ancestorStringNonZero($this->aIds)."\" method=\"post\">
+            <form name=\"input\" action=\"index.php?rId=".$this->respID."".$this->ancestorStringNonZero($this->aIds)."\" method=\"post\" class=\"constructive\">
                 <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"".$this->respID."\" />
                 <input type=\"hidden\" id=\"rID\" name=\"rID\" value=\"".$response->getResponseID()."\" />
                 <input type=\"hidden\" class=\"vote\" name=\"vote\" value=\"-1\" />
-                <p class=\"constructive\">
-                    Is this argument constructive?
-                    <img src=\"yes.png\" class=\"constructiveButton yesButton\" onclick=\"submitVote(".$response->getResponseID().", 1);\" />(".$response->getResponseYesVotes().")
-                    <img src=\"no.png\" class=\"constructiveButton noButton\" onclick=\"submitVote(".$response->getResponseID().", 0);\" />(".$response->getResponseNoVotes().")
+                <p>
+                    Is this argument constructive?");
+                    
+                if($response->getResponseVote() == 1){
+                    print("<img src=\"yesButtonDepressed.png\" class=\"constructiveButton yesButtonDepressed\" ");
+                }
+                else {
+                    print("<img src=\"yesButton.png\" class=\"constructiveButton yesButton\" ");
+                }
+
+                print("onclick=\"submitVote(".$response->getResponseID().", 1);\" />(".$response->getResponseYesVotes().")");
+                    
+                if($response->getResponseVote() == 0){
+                    print("<img src=\"noButtonDepressed.png\" class=\"constructiveButton noButtonDepressed\" ");
+                }
+                else {
+                    print("<img src=\"noButton.png\" class=\"constructiveButton noButton\" ");
+                }
+                    
+                print("onclick=\"submitVote(".$response->getResponseID().", 0);\" />(".$response->getResponseNoVotes().")
                 </p>
             </form>
             </div>");           

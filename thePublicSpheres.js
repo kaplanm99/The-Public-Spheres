@@ -1,6 +1,8 @@
 /* Copyright (c) 2012 Michael Andrew Kaplan
  * See the file license.txt for copying permission. */
 
+var subpointCount = 1;
+ 
 function goToRID(el, event, rID, aIDs) {
 	var target = event.srcElement || event.target;
 
@@ -93,7 +95,7 @@ function showSearchPreviousResponsesBox()
 
 function attachArrowMouseEvents(selector) {
 	$("."+selector).mouseover(function(){
-	 $(this).attr("src", selector+"Highlighted.png");
+	 $(this).attr("src", selector+"Shadow.png");
    });
 
 	$("."+selector).mouseout(function(){
@@ -101,7 +103,7 @@ function attachArrowMouseEvents(selector) {
    });
    
    $("."+selector+"Depressed").mouseover(function(){
-	 $(this).attr("src", selector+"HighlightedDepressed.png");
+	 $(this).attr("src", selector+"ShadowDepressed.png");
    });
 
 	$("."+selector+"Depressed").mouseout(function(){
@@ -117,16 +119,16 @@ function submitVote(selector, theVote) {
 }
 
 $(document).ready(function(){
-  $("#SubmitResponseSupportButton").click(function(event){
-	 $("#rIsAgree").attr("value",1);
-	 $("#responseForm").submit();
-   });
-   
    $("#SubmitResponseOpposeButton").click(function(event){
 	 $("#rIsAgree").attr("value",0);
 	 $("#responseForm").submit();
    });
 
+   $("#SubmitResponseSupportButton").click(function(event){
+	 $("#rIsAgree").attr("value",1);
+	 $("#responseForm").submit();
+   });
+   
 	$("#SubmitResponseDiscussionButton").click(function(event){
 	 $("#rIsAgree").attr("value",2);
 	 $("#responseForm").submit();
@@ -137,18 +139,23 @@ $(document).ready(function(){
 	 $("#responseForm").submit();
    });
    
-   //
-   
-   $("#SearchPreviousResponsesSupportButton").click(function(event){
-	 $("#searchPreviousResponseIsAgree").attr("value",1);
-	 $("#searchPreviousResponseForm").submit();
+   $("#SubmitResponseNeutralButton").click(function(event){
+	 $("#rIsAgree").attr("value",4);
+	 $("#responseForm").submit();
    });
+   
+   //
    
    $("#SearchPreviousResponsesOpposeButton").click(function(event){
 	 $("#searchPreviousResponseIsAgree").attr("value",0);
 	 $("#searchPreviousResponseForm").submit();
    });
 
+   $("#SearchPreviousResponsesSupportButton").click(function(event){
+	 $("#searchPreviousResponseIsAgree").attr("value",1);
+	 $("#searchPreviousResponseForm").submit();
+   });
+   
 	$("#SearchPreviousResponsesDiscussionButton").click(function(event){
 	 $("#searchPreviousResponseIsAgree").attr("value",2);
 	 $("#searchPreviousResponseForm").submit();
@@ -159,15 +166,36 @@ $(document).ready(function(){
 	 $("#searchPreviousResponseForm").submit();
    });
    
+   $("#SearchPreviousResponsesNeutralButton").click(function(event){
+	 $("#searchPreviousResponseIsAgree").attr("value",4);
+	 $("#searchPreviousResponseForm").submit();
+   });
+   
    $("#logoutLink").click(function(event){
 	 $("#logoutForm").submit();
+   });
+   
+   $("#AddAnotherSubpointButton").click(function(event){
+     if(subpointCount < 6) {
+         subpointCount++;
+         $("#textAreas").append('<textarea name="rText[]" class="textbox textboxSize"></textarea>');
+         var tempWidth = ($("#innerCircle>.circleresponsessize").innerWidth()-(subpointCount*25))/subpointCount;
+         
+         if(tempWidth > 480) {
+            tempWidth = 480;
+         }
+         
+         $("#textAreas").width( (tempWidth+25)*subpointCount );
+         
+         $(".textboxsize").width(tempWidth);
+     }
    });
    
    $("#greyOverlay").click(closeTop);
    $(".closeButton").click(closeTop);
    
-   attachArrowMouseEvents("upArrow");
-   attachArrowMouseEvents("downArrow");
+   attachArrowMouseEvents("yesButton");
+   attachArrowMouseEvents("noButton");
   
   /*  
   $(".forkIcon").mouseover(function(){

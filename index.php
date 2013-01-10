@@ -25,7 +25,7 @@ if(isset($_POST["searchPreviousResponsePID"])&&isset($_POST["searchPreviousRespo
     $searchPreviousResponseIsAgree = strip_tags($_POST["searchPreviousResponseIsAgree"]);
     $searchPreviousResponseIsAgree = trim($searchPreviousResponseIsAgree);
     
-    if($searchPreviousResponseIsAgree == "0" || $searchPreviousResponseIsAgree == "1" || $searchPreviousResponseIsAgree == "2" || $searchPreviousResponseIsAgree == "3") {
+    if($searchPreviousResponseIsAgree == "0" || $searchPreviousResponseIsAgree == "1" || $searchPreviousResponseIsAgree == "2" || $searchPreviousResponseIsAgree == "3" || $searchPreviousResponseIsAgree == "4") {
         $searchPreviousResponseIsAgree = intval($searchPreviousResponseIsAgree);
     } else {
         $searchPreviousResponseIsAgree = -1;
@@ -51,6 +51,8 @@ if(isset($_POST["searchPreviousResponsePID"])&&isset($_POST["searchPreviousRespo
 		$mysqli->close();   
     }
 } 
+
+$rID = 0;
 
 if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($_SESSION['user'])) {    
     $rID = strip_tags($_POST["rID"]);
@@ -147,14 +149,21 @@ if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($
 }
  
 if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && isset($_SESSION['user'])) {    
-    $rText = strip_tags($_POST["rText"]);
-    $rText = trim($rText);
-    $rText = filter_var($rText, FILTER_SANITIZE_STRING);
+    
+    $rText = $_POST["rText"];
+            
+    foreach ($rText as &$temp_subpointText) {
+        $temp_subpointText = strip_tags($temp_subpointText);
+        $temp_subpointText = trim($temp_subpointText);
+        $temp_subpointText = filter_var($temp_subpointText, FILTER_SANITIZE_STRING);
+    }
+    unset($temp_subpointText);
+    
     
     $rIsAgree = strip_tags($_POST["rIsAgree"]);
     $rIsAgree = trim($rIsAgree);
     
-    if($rIsAgree == "0" || $rIsAgree == "1" || $rIsAgree == "2" || $rIsAgree == "3") {
+    if($rIsAgree == "0" || $rIsAgree == "1" || $rIsAgree == "2" || $rIsAgree == "3" || $rIsAgree == "4") {
         $rIsAgree = intval($rIsAgree);
     } else {
         $rIsAgree = -1;
@@ -170,12 +179,37 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
             
         $mysqli = new mysqli($host, $username, $password, $db);                    
         
-        if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText, user) VALUES (?,?);")) {
-            $stmt->bind_param('ss', $rText, $_SESSION['user']);
+        if ($stmt = $mysqli->prepare("INSERT INTO Responses (user) VALUES (?);")) {
+            $stmt->bind_param('s', $_SESSION['user']);
             
             if($stmt->execute()) {
                 $newRID = $stmt->insert_id;
                 $stmt->close();
+                
+                if ($stmt = $mysqli->prepare("INSERT INTO Subpoints (subpointText) VALUES (?);")) {
+                
+                    foreach ($rText as &$temp_subpointText) {
+                        $stmt->bind_param('s', $temp_subpointText);
+                        
+                        if($stmt->execute()) {
+                            $newSID = $stmt->insert_id;
+                            
+                            require('db/config.php');
+            
+                            $mysqli2 = new mysqli($host, $username, $password, $db);
+                            
+                            if ($stmt2 = $mysqli2->prepare("INSERT INTO ResponseSubpoints (responseId,subpointId) VALUES (?,?);")) {
+                                $stmt2->bind_param('ii', $newRID,$newSID);
+                                $stmt2->execute();
+                                $stmt2->close();
+                            }
+                            
+                        }
+                    }
+                    
+                }
+                $stmt->close();
+                
                 if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
                     $stmt->bind_param('iiis', $newRID, $rIsAgree, $rPID, $_SESSION['user']);
             
@@ -196,10 +230,10 @@ function responseExists($responseId) {
     require('db/config.php');
     $mysqli = new mysqli($host, $username, $password, $db);                    
     
-    if ($stmt = $mysqli->prepare("SELECT responseText FROM Responses WHERE responseId = ?;")) {
+    if ($stmt = $mysqli->prepare("SELECT timestamp FROM Responses WHERE responseId = ?;")) {
         $stmt->bind_param('i', $responseId);
         $stmt->execute();
-        $stmt->bind_result($responseText);
+        $stmt->bind_result($timestamp);
         
         if($stmt->fetch()) {
             $exists = true;
@@ -236,16 +270,28 @@ function outputForm($respID, $aIds, $button1Text, $button2Text) {
         print("        
         <form id=\"responseForm\" action=\"index.php?rId=$respID".ancestorStringNonZero($aIds)."\" method=\"post\">
         
-            <textarea id=\"rText\" name=\"rText\" class=\"textbox textboxSize\"></textarea>
+            <div id=\"textAreas\">
+            <textarea name=\"rText[]\" class=\"textbox textboxSize\"></textarea>
+            </div>
             <input type=\"hidden\" id=\"rIsAgree\" name=\"rIsAgree\" value=\"0\" />
             
             <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"$respID\" />
             
             <div class=\"formButtons\">
-                <p id=\"SubmitResponse".$button1Text."Button\" class=\"".$button1Text."Button\">".$button1Text."</p>
-                <p id=\"SearchPreviousResponsesButton\">Search Previous Responses</p>
-                <p id=\"SubmitResponse".$button2Text."Button\" class=\"".$button2Text."Button\">".$button2Text."</p>
-            </div>
+                <p id=\"SubmitResponse".$button1Text."Button\" class=\"".$button1Text."Button argumentSubmitButton\">".$button1Text."</p>");
+                
+                if($button1Text == "Support") {
+                    print("<p id=\"SubmitResponseNeutralButton\" class=\"NeutralButton argumentSubmitButton\">Neutral</p>");
+                }
+                
+                print("<p id=\"SubmitResponse".$button2Text."Button\" class=\"".$button2Text."Button argumentSubmitButton\">".$button2Text."</p>
+                <p id=\"SearchPreviousResponsesButton\" class=\"argumentSubmitButton\">Search Previous Responses</p>");
+                
+                if($button1Text == "Support") {
+                    print("<p id=\"AddAnotherSubpointButton\" class=\"argumentSubmitButton\">Add another subpoint input box</p>");
+                }
+                
+                print("</div>
         </form>");
     }
     else {
@@ -261,6 +307,14 @@ function outputDiscussionContents($respID, $aIds) {
     $agreeResponses = new Responses("Support", 1, $respID, $aIds);
     $agreeResponses->generateResponses();
     $agreeResponses->outputResponses();
+                                
+    print("        
+    <div class=\"dividingLine dividingLineSize\"></div>
+    ");
+    
+    $neutralResponses = new Responses("Neutral", 4, $respID, $aIds);
+    $neutralResponses->generateResponses();
+    $neutralResponses->outputResponses();
                                 
     print("        
     <div class=\"dividingLine dividingLineSize\"></div>
@@ -413,14 +467,15 @@ $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
             <input type="hidden" id="searchPreviousResponseRID" name="searchPreviousResponseRID" value="-1">
             <input type="hidden" id="searchPreviousResponseIsAgree" name="searchPreviousResponseIsAgree" value="-1">
             
-                <div class="formButtons">
+                <div class="formButtonsSPR">
                 <?php
                     if($currentArgument->getArgumentIsAgree() == 3 || $rId == 0) {
-                        print("<p id=\"SearchPreviousResponsesCategoryButton\" class=\"CategoryButton\">Category</p>
-                        <p id=\"SearchPreviousResponsesDiscussionButton\" class=\"DiscussionButton\">Discussion</p>");
+                        print("<p id=\"SearchPreviousResponsesCategoryButton\" class=\"CategoryButton argumentSubmitButton\">Category</p>
+                        <p id=\"SearchPreviousResponsesDiscussionButton\" class=\"DiscussionButton argumentSubmitButton\">Discussion</p>");
                     } else {
-                        print("<p id=\"SearchPreviousResponsesSupportButton\" class=\"SupportButton\">Support</p>
-                        <p id=\"SearchPreviousResponsesOpposeButton\" class=\"OpposeButton\">Oppose</p>");
+                        print("<p id=\"SearchPreviousResponsesSupportButton\" class=\"SupportButton argumentSubmitButton\">Support</p>
+                        <p id=\"SearchPreviousResponsesNeutralButton\" class=\"NeutralButton argumentSubmitButton\">Neutral</p>
+                        <p id=\"SearchPreviousResponsesOpposeButton\" class=\"OpposeButton argumentSubmitButton\">Oppose</p>");
                     }      
                 ?>
                 </div>
@@ -442,7 +497,9 @@ $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
     <div>
         <h1>Register</h1>
         <p>
-            <form action="index.php" method="POST">
+            <?php
+            print("<form action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">");
+            ?>
                 <input type="hidden" name="op" value="new">
                 Username:<br>
                 <input type="text" name="user" size="60"><br>
@@ -456,7 +513,9 @@ $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
     <div>
         <h1>Login</h1>
         <p>
-            <form action="index.php" method="POST">
+            <?php
+            print("<form action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">");
+            ?>
                 <input type="hidden" name="op" value="login">
                 Username:<br>
                 <input type="text" name="user" size="60"><br>
@@ -470,7 +529,9 @@ $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
     <div>
         <h1>Change password</h1>
         <p>
-            <form action="index.php" method="POST">
+            <?php
+            print("<form action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">");
+            ?>
                 <input type="hidden" name="op" value="change">
                 Username:<br>
                 <input type="text" name="user" size="60"><br>
@@ -496,7 +557,7 @@ if($rId != 0) {
     <?php
         if(isset($_SESSION['user'])) {
             print ("<p id=\"user\">Welcome, ".htmlspecialchars($_SESSION['user'])."</p>
-                <form id=\"logoutForm\" action=\"index.php\" method=\"POST\">
+                <form id=\"logoutForm\" action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">
                     <p id=\"logoutLink\">Logout <input type=\"hidden\" name=\"op\" value=\"logout\"></p>
                 </form>");
         }
@@ -617,7 +678,7 @@ if($rId != 0) {
     <?php
         if(isset($_SESSION['user'])) {
             print ("<p id=\"user\">Welcome, ".htmlspecialchars($_SESSION['user'])."</p>
-                <form id=\"logoutForm\" action=\"index.php\" method=\"POST\">
+                <form id=\"logoutForm\" action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">
                     <p id=\"logoutLink\">Logout <input type=\"hidden\" name=\"op\" value=\"logout\"></p>
                 </form>");
         }

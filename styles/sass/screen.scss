@@ -41,22 +41,22 @@ body {
 }
 
 .constructiveButton{
-    position: relative;
-    top: 3px;
-    margin-left: 3px;
-    margin-right: 3px;
+    vertical-align:text-top;
 }
 
 .constructive{
-    padding-bottom:5px;
+    padding-top:5px;
     clear: both;
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .opposeCircle {
 	border-color: #700;
 	background-color:#fff3f3;
 }
-
+/*
 .supportCircleTitle {
 	color:#050;
 }
@@ -64,7 +64,7 @@ body {
 .opposeCircleTitle {
 	color:#700;
 }
-
+*/
 .SupportLabel {
 	position: absolute;
 	top: -5px;
@@ -84,34 +84,22 @@ body {
 
 .SupportTitle {
 	background-color:#b6d7a8;
-	text-align:center;
-	font-weight:normal;
-	margin-left: auto;
-	margin-right: auto;
 }
 
 .OpposeTitle {
 	background-color:#ea9999;
-	text-align:center;
-	font-weight:normal;
-	margin-left: auto;
-	margin-right: auto;
 }
 
 .CategoriesTitle {
 	background-color:#99B6EA;
-	text-align:center;
-	font-weight:normal;
-	margin-left: auto;
-	margin-right: auto;
 }
 
 .DiscussionsTitle {
 	background-color:#EAC799;
-	text-align:center;
-	font-weight:normal;
-	margin-left: auto;
-	margin-right: auto;
+}
+
+.NeutralTitle {
+	background-color:#EAC799;
 }
 
 .response{
@@ -125,6 +113,15 @@ body {
 	clear:both;
 	cursor:pointer;
 	word-wrap: break-word;
+    padding:10px;
+}
+
+.subpointLine {
+    width: 100%;
+    border-bottom: 1px solid black;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
 }
 
 .searchResponse{
@@ -142,33 +139,12 @@ body {
 	word-wrap: break-word;
 }
 
-.responses  div p{
-	
-	margin:0px;
-}
-
-.SupportCircleColumn {
-	float:left;
-}
-
 .SupportCircleColumn .response {
 	background-color:#b6d7a8;
 }	
 
-.CategoriesCircleColumn{
-	float:left;
-}
-
 .CategoriesCircleColumn .response {
 	background-color:#99B6EA;
-}
-
-.OpposeCircleColumn {
-	float:right;
-}
-
-.DiscussionsCircleColumn {
-	float:right;
 }
 
 .OpposeCircleColumn .response {
@@ -176,6 +152,10 @@ body {
 }
 
 .DiscussionsCircleColumn .response {
+	background-color:#eac799;
+}
+
+.NeutralCircleColumn .response {
 	background-color:#eac799;
 }
 
@@ -209,7 +189,26 @@ body {
 }
 
 .formButtons {
-	width: 400px;
+	width: 710px;
+	height: 22px;
+    clear:both;
+    margin-left: auto;
+	margin-right: auto;
+	font-size:14px;
+	padding:0px;
+	margin-top:5px;
+	margin-bottom: 0px;
+}
+
+#textAreas {
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 100px;
+}
+
+.formButtonsSPR {
+	width: 274px;
 	height: 22px;
     margin-left: auto;
 	margin-right: auto;
@@ -219,60 +218,52 @@ body {
 	margin-bottom: 0px;
 }
 
-.SupportButton {
-	float:left;
+.argumentSubmitButton {
 	width:70px;
-	background-color:#b6d7a8;
 	text-align:center;
 	@include border-radius(5px);
 	padding: 2px;
 	border: 2px solid #666;
 	cursor:pointer;
+    float:left;    
+}
+
+.SupportButton {
+    background-color:#b6d7a8;
+}
+
+.NeutralButton {
+    margin-left: 20px;
+    background-color:#EAC799;
 }
 
 .OpposeButton {
-	float:right;
-	width:70px;
-	background-color:#ea9999;
-	text-align:center;
-	@include border-radius(5px);
-	padding: 2px;
-	border: 2px solid #666;
-	cursor:pointer;
+    margin-left: 20px;
+    background-color:#ea9999;
 }
 
 .CategoryButton {
-	float:left;
-	width:70px;
+    margin-left: 50px;
 	background-color:#99B6EA;
-	text-align:center;
-	@include border-radius(5px);
-	padding: 2px;
-	border: 2px solid #666;
-	cursor:pointer;
 }
 
 .DiscussionButton {
-	float:right;
-	width:70px;
+    margin-left: 20px;
 	background-color:#EAC799;
-	text-align:center;
-	@include border-radius(5px);
-	padding: 2px;
-	border: 2px solid #666;
-	cursor:pointer;
 }
 
 #SearchPreviousResponsesButton {
-	float: left;
 	width: 180px;
 	background-color: #CCC;
 	text-align: center;
-	@include border-radius(5px);
-	padding: 2px;
-	border: 2px solid #666;
-	cursor: pointer;
-	margin-left: 28px;
+    margin-left: 20px;
+}
+
+#AddAnotherSubpointButton {
+	width: 200px;
+	background-color: #CCC;
+	text-align: center;
+    margin-left: 20px;
 }
 
 /*
@@ -280,7 +271,7 @@ Sizes
 */
 
 #mainCircleSize {
-	width: 1010px;
+	width: 1270px;
 	height:760px;
 	margin-left:auto;
 	margin-right:auto;
@@ -300,7 +291,7 @@ Sizes
 }
 
 .circleResponsesSize {
-	width: 98%;
+	width: 99%;
 }
 
 .titleSize {
@@ -309,11 +300,22 @@ Sizes
 	margin-top:2px;
 	margin-bottom:2px;
 	@include border-radius(5px);
+    text-align:center;
+	font-weight:normal;
+	margin-left: auto;
+	margin-right: auto;
 }
 
-.circleColumnSize {
+.twoCircleColumnSize {
 	width: 48%;
-	height: 69%;
+	height: 75%;
+    float:left;
+}
+
+.threeCircleColumnSize {
+	width: 31%;
+	height: 75%;
+    float:left;
 }
 
 
@@ -325,20 +327,25 @@ Sizes
 .dividingLineSize {
 	width:4px;
 	height: 71%;
-	margin-left:15px;
+	margin-left:10px;
+    margin-right: 10px;
 }
 
 .textboxSize {
-	width: 500px;
-	height:100px;
+	width: 480px;
+    height: 100px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 #responseForm {
 	clear: both;
+    /*
 	height: 128px;
 	width: 500px;
 	margin-left: auto;
 	margin-right: auto;
+    */
 }
 
 /*
@@ -476,8 +483,7 @@ Sizes
 
 .responseP {
 	float: left;
-	padding:5px;
-    width:435px;
+    width: 100%;
 }
 
 .responseFormPlaceholder {
