@@ -635,8 +635,8 @@ if($rId != 0) {
 
                             $mysqli3 = new mysqli($host, $username, $password, $db);
                             
-                            if ($stmt3 = $mysqli3->prepare("SELECT r.responseText, FROM Responses r, ResponseSubpoints rs WHERE rs.responseId = ? AND rs.subpointId = r.responseId;")) {
-                                $stmt3->bind_param('i', $responseID);
+                            if ($stmt3 = $mysqli3->prepare("SELECT r.responseText FROM Responses r, ResponseSubpoints rs WHERE rs.responseId = ? AND rs.subpointId = r.responseId;")) {
+                                $stmt3->bind_param('i', $aId);
                                 $stmt3->execute();
                                 $stmt3->bind_result($subpointText);
                             
