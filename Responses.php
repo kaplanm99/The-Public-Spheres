@@ -104,10 +104,10 @@ class Responses {
 
         $mysqli = new mysqli($host, $username, $password, $db);
         
-        if ($stmt = $mysqli->prepare("SELECT r.responseId, (c.yesVotes - c.noVotes) AS voteDifference, c.yesVotes, c.noVotes FROM Responses r, (SELECT responseId, score, yesVotes, noVotes FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId ORDER BY voteDifference DESC;")) {
+        if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText, (c.yesVotes - c.noVotes) AS voteDifference, c.yesVotes, c.noVotes FROM Responses r, (SELECT responseId, score, yesVotes, noVotes FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId ORDER BY voteDifference DESC;")) {
             $stmt->bind_param('ii', $this->respID, $this->typeIsAgree);
             $stmt->execute();
-            $stmt->bind_result($responseID, $responseScore, $responseYesVotes, $responseNoVotes);
+            $stmt->bind_result($responseID, $responseText, $responseScore, $responseYesVotes, $responseNoVotes);
             
             while ($stmt->fetch()) {
             
@@ -115,25 +115,29 @@ class Responses {
                 
                 $responseSubpoints = array();
                 
-                require('db/config.php');
+                if(is_null($responseText)) {
+                
+                    require('db/config.php');
 
-                $mysqli3 = new mysqli($host, $username, $password, $db);
-                
-                if ($stmt3 = $mysqli3->prepare("SELECT s.subpointText FROM ResponseSubpoints rs, Subpoints s WHERE rs.responseId = ? AND rs.subpointId = s.subpointId ORDER BY rs.position ASC;")) {
-                    $stmt3->bind_param('i', $responseID);
-                    $stmt3->execute();
-                    $stmt3->bind_result($subpointText);
-                
-                    while($stmt3->fetch()) {
-                        
-                        $responseSubpoints[] = str_replace('\\', "", $subpointText);
-                        
+                    $mysqli3 = new mysqli($host, $username, $password, $db);
+                    
+                    if ($stmt3 = $mysqli3->prepare("SELECT r.responseText FROM Responses r, ResponseSubpoints rs WHERE rs.responseId = ? AND rs.subpointId = r.responseId;")) {
+                        $stmt3->bind_param('i', $responseID);
+                        $stmt3->execute();
+                        $stmt3->bind_result($subpointText);
+                    
+                        while($stmt3->fetch()) {
+                            
+                            $responseSubpoints[] = str_replace('\\', "", $subpointText);
+                        }
+                            
+                        $stmt3->close();
                     }
-                        
-                    $stmt3->close();
+                    
+                    $mysqli3->close();
+                } else {
+                    $responseSubpoints[] = $responseText;
                 }
-                
-                $mysqli3->close();
                 
                 if(isset($_SESSION['user'])) {
                     

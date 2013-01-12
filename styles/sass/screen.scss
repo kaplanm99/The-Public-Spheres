@@ -124,6 +124,14 @@ body {
     display: inline-block;
 }
 
+.subpointArgumentLine {
+    width: 100%;
+    border-bottom: 1px solid #cccccc;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
 .searchResponse{
 	border: 1px solid black;
 	@include border-radius(10px);

@@ -152,10 +152,14 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
     
     $rText = $_POST["rText"];
             
-    foreach ($rText as &$temp_subpointText) {
+    foreach ($rText as $key => &$temp_subpointText) {
         $temp_subpointText = strip_tags($temp_subpointText);
         $temp_subpointText = trim($temp_subpointText);
         $temp_subpointText = filter_var($temp_subpointText, FILTER_SANITIZE_STRING);
+        
+        if(strlen($temp_subpointText) == 0) {
+            unset($rText[$key]);
+        }
     }
     unset($temp_subpointText);
     
@@ -173,53 +177,76 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
     $rPID = trim($rPID);
     $rPID = intval($rPID);
     
-    if(($rPID == 0 || responseExists($rPID))&& strlen($rText) != 0 && $rIsAgree != -1) {
+    if(($rPID == 0 || responseExists($rPID))&& count($rText) != 0 && $rIsAgree != -1) {
     
         require('db/config.php');
             
         $mysqli = new mysqli($host, $username, $password, $db);                    
-        
-        if ($stmt = $mysqli->prepare("INSERT INTO Responses (user) VALUES (?);")) {
-            $stmt->bind_param('s', $_SESSION['user']);
+        if(count($rText) == 1) {
             
-            if($stmt->execute()) {
-                $newRID = $stmt->insert_id;
-                $stmt->close();
+            foreach ($rText as $temp_subpointText) {
                 
-                if ($stmt = $mysqli->prepare("INSERT INTO Subpoints (subpointText) VALUES (?);")) {
-                
-                    foreach ($rText as &$temp_subpointText) {
-                        $stmt->bind_param('s', $temp_subpointText);
+                if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText, user) VALUES (?,?);")) {
+                    $stmt->bind_param('ss', $temp_subpointText, $_SESSION['user']);
+                    
+                    if($stmt->execute()) {
+                        $newRID = $stmt->insert_id;
+                        $stmt->close();
                         
-                        if($stmt->execute()) {
-                            $newSID = $stmt->insert_id;
-                            
-                            require('db/config.php');
-            
-                            $mysqli2 = new mysqli($host, $username, $password, $db);
-                            
-                            if ($stmt2 = $mysqli2->prepare("INSERT INTO ResponseSubpoints (responseId,subpointId) VALUES (?,?);")) {
-                                $stmt2->bind_param('ii', $newRID,$newSID);
-                                $stmt2->execute();
-                                $stmt2->close();
-                            }
-                            
+                        if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
+                            $stmt->bind_param('iiis', $newRID, $rIsAgree, $rPID, $_SESSION['user']);
+                    
+                            $stmt->execute();
                         }
                     }
                     
-                }
-                $stmt->close();
-                
-                if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
-                    $stmt->bind_param('iiis', $newRID, $rIsAgree, $rPID, $_SESSION['user']);
-            
-                    $stmt->execute();
+                    $stmt->close();
                 }
             }
-            
-            $stmt->close();
+        } elseif(count($rText) > 1) {
+        
+            if ($stmt = $mysqli->prepare("INSERT INTO Responses (user) VALUES (?);")) {
+                $stmt->bind_param('s', $_SESSION['user']);
+                
+                if($stmt->execute()) {
+                    $newRID = $stmt->insert_id;
+                    $stmt->close();
+                    
+                    if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
+                        $stmt->bind_param('iiis', $newRID, $rIsAgree, $rPID, $_SESSION['user']);
+                
+                        $stmt->execute();
+                        $stmt->close();
+                    }
+                    
+                    if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText, user) VALUES (?,?);")) {
+                
+                        foreach ($rText as &$temp_subpointText) {
+                            $stmt->bind_param('ss', $temp_subpointText, $_SESSION['user']);
+                            
+                            if($stmt->execute()) {
+                                $newSID = $stmt->insert_id;
+                                
+                                require('db/config.php');
+                
+                                $mysqli2 = new mysqli($host, $username, $password, $db);
+                                
+                                if ($stmt2 = $mysqli2->prepare("INSERT INTO ResponseSubpoints (responseId,subpointId) VALUES (?,?);")) {
+                                    $stmt2->bind_param('ii', $newRID,$newSID);
+                                    $stmt2->execute();
+                                    $stmt2->close();
+                                }
+                                
+                            }
+                        }
+                        
+                    }
+                }
+                
+                $stmt->close();
+            }
         }
-            
+        
         $mysqli->close();        
     }
 }
@@ -600,7 +627,44 @@ if($rId != 0) {
                             $anotherCircle = $anotherCircle . " opposeCircleTitle";
                         }
                         
-                        $anotherCircle = $anotherCircle ."\" onclick=\"goToRID(this, event, $aId,'".ancestorString($temp_aIds)."');\">".str_replace('\\', "", $parentText)."</h2>";
+                        $anotherCircle = $anotherCircle ."\" onclick=\"goToRID(this, event, $aId,'".ancestorString($temp_aIds)."');\">";
+
+                        if(is_null($parentText)) {
+                
+                            require('db/config.php');
+
+                            $mysqli3 = new mysqli($host, $username, $password, $db);
+                            
+                            if ($stmt3 = $mysqli3->prepare("SELECT r.responseText, FROM Responses r, ResponseSubpoints rs WHERE rs.responseId = ? AND rs.subpointId = r.responseId;")) {
+                                $stmt3->bind_param('i', $responseID);
+                                $stmt3->execute();
+                                $stmt3->bind_result($subpointText);
+                            
+                                $temp = 0;
+                                
+                                while($stmt3->fetch()) {
+           
+                                    if($temp == 0) {
+                                        $anotherCircle = $anotherCircle .str_replace('\\', "", $subpointText);
+                                        $temp = 1;
+                                    }
+                                    else {
+                                        $anotherCircle = $anotherCircle . " <br/><span class=\"subpointArgumentLine\" > </span><br/> "  . $subpointText;
+                                    }
+                                    
+                                }
+                                    
+                                $stmt3->close();
+                            }
+                            
+                            $mysqli3->close();
+                            
+                        } else {
+                            $anotherCircle = $anotherCircle .str_replace('\\', "", $parentText);
+                        }
+                        
+                        
+                        $anotherCircle = $anotherCircle ."</h2>";
                         
                         $tempAID = $aId."";
                         array_push($temp_aIds, $tempAID);
@@ -649,7 +713,24 @@ if($rId != 0) {
             print(" opposeCircleTitle");
         }
         
-        print("\">".str_replace('\\', "", $currentArgument->getArgumentText())."</h2>");
+        print("\">");
+        
+        $curArgOutput = "";
+        $temp = 0;
+        
+        foreach ($currentArgument->getArgumentSubpoints() as $subpoint) {
+            if($temp == 0) {
+                $curArgOutput = $curArgOutput . $subpoint;
+                $temp = 1;
+            }
+            else {
+                $curArgOutput = $curArgOutput . " <br/><span class=\"subpointArgumentLine\" > </span><br/> "  . $subpoint;
+            }
+        }
+        
+        print($curArgOutput);
+    
+        print("</h2>");
                 
         if($currentArgument->getArgumentIsAgree() == 1) {
             print("<p class=\"supportLabel\">Support</p>");
