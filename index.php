@@ -373,35 +373,96 @@ function outputCategoryContents($respID, $aIds) {
     
 }
 
-function validParent($first, $second) {
-    $tempValid = false;
+function isSubpoint($responseId, $subpointId) {
     
+    $result = false;
+     
     require('db/config.php');
     
-    $mysqli = new mysqli($host, $username, $password, $db);                    
-    if ($stmt = $mysqli->prepare("SELECT parentId FROM Context WHERE responseId = ?;")) {
-        $stmt->bind_param('i', $second);
+    $mysqli = new mysqli($host, $username, $password, $db);
+
+    if ($stmt = $mysqli->prepare("SELECT responseId FROM ResponseSubpoints WHERE responseId = ? AND subpointId = ?;")) {
+        $stmt->bind_param('ii', $responseId, $subpointId);
         $stmt->execute();
-        $stmt->bind_result($parentId);
         
-        while($stmt->fetch()) {
-            if($parentId == $first) {
-                $tempValid = true;
-            }
+        if($stmt->fetch()) {
+            $result = true;
         }
         
         $stmt->close();
     }
     
-    //Close the database connection
     $mysqli->close();
     
-    return $tempValid;
+    return $result;
+}
+
+function isParent($parentId, $responseId) {
+    $result = false;
+     
+    require('db/config.php');
+    
+    $mysqli = new mysqli($host, $username, $password, $db);
+
+    if ($stmt = $mysqli->prepare("SELECT parentId FROM Context WHERE parentId = ? AND responseId = ?;")) {
+        $stmt->bind_param('ii', $parentId, $responseId);
+        $stmt->execute();
+        
+        if($stmt->fetch()) {
+            $result = true;
+        }
+        
+        $stmt->close();
+    }
+    
+    $mysqli->close();
+    
+    return $result;
+}
+
+function validParent($first, $second) {
+    
+    $firstOuter = intval($first);
+    $secondInner = intval($second);
+    
+    if(strstr($first, 's') != false) {
+        $firstArr = explode( 's', $first );
+        
+        if(count($firstArr) == 2) {
+            if(!isSubpoint(intval($firstArr[0]), intval($firstArr[1]))) {
+                //print("subpoint" . $firstArr[0] . " " . $firstArr[1]);
+                return false;
+            }
+            
+            $firstOuter = intval($firstArr[1]);
+        } else {
+            return false;
+        }
+    }
+    
+    if(strstr($second, 's') != false) {
+        $secondArr = explode( 's', $second );
+        
+        if(count($secondArr) == 2) {
+            if(!isSubpoint(intval($secondArr[0]), intval($secondArr[1]))){
+                //print("subpoint" . $secondArr[0] . " " . $secondArr[1]);
+                return false;
+            }
+            
+            $secondInner = intval($secondArr[0]);
+        } else {
+            return false;
+        }
+    }
+    /*
+    if(!isParent($firstOuter, $secondInner)) {
+        print("parent" . $firstOuter . " " . $secondInner);
+    }
+    */
+    return ( isParent($firstOuter, $secondInner) );
 }
 
 function validAncestors($aIds, $rId) {
-    
-    $valid = true;
     
     foreach ($aIds as $aId) {
         $first = $second; 
@@ -429,23 +490,25 @@ $rId = 0;
 if(isset($_GET["rId"])) {
     $rId = strip_tags($_GET["rId"]);
     $rId = trim($rId);
-    $rId = intval($rId);
+    //$rId = intval($rId);
     
-    if($rId != 0) {
+    if(intval($rId) != 0) {
         if(isset($_GET["aIds"])) {
             $aIds = $_GET["aIds"];
             
             foreach ($aIds as &$temp_aId) {
                 $temp_aId = strip_tags($temp_aId);
                 $temp_aId = trim($temp_aId);
-                $temp_aId = intval($temp_aId);
+                //$temp_aId = intval($temp_aId);
             }
         
             unset($temp_aId);
             
             if(!validAncestors($aIds, $rId)) {
                 $rId = 0;
-            }
+            } /*else {
+                $rId = intval($rId);
+            }*/
         } else{
             $rId = 0;
         }
@@ -605,6 +668,8 @@ if($rId != 0) {
             $lastAId = 0;
             
             foreach ($aIds as $aId) {
+                $aId = intval($aId);
+            
                 if ($stmt = $mysqli->prepare("SELECT r.responseText, c.isAgree FROM Responses r, (SELECT responseId, isAgree FROM Context WHERE responseId = ? AND parentId = ?) c WHERE c.responseId = r.responseId;")) {
                     $stmt->bind_param('ii', $aId, $lastAId);
                     $stmt->execute();
@@ -649,7 +714,7 @@ if($rId != 0) {
                                         $temp = 1;
                                     }
                                     else {
-                                        $anotherCircle = $anotherCircle . " <br/><span class=\"subpointArgumentLine\" > </span><br/> "  . $subpointText;
+                                        $anotherCircle = $anotherCircle . " <br/><span class=\"subpointArgumentLine\" > </span><br/> "  . str_replace('\\', "", $subpointText);
                                     }
                                     
                                 }

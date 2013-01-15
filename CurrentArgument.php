@@ -4,17 +4,31 @@
 
 class CurrentArgument {
 
-    private $rId; 
-    private $lastAId;
     private $argumentSubpoints;
     private $argumentIsAgree;
     
     function __construct($rId, $lastAId) { 
+        
+        $lastAIdOuter = intval($lastAId);
+        $rIdInner = intval($rId);
+        $rIdOuter = -1;
+        
+        if(strstr($lastAId, 's') != false) {
+            $lastAIdArr = explode( 's', $lastAId );
+            $lastAIdOuter = intval($lastAIdArr[1]);
+        }
+        
+        if(strstr($rId, 's') != false) {
+            $rIdArr = explode( 's', $rId );
+            $rIdInner = intval($rIdArr[0]);
+            $rIdOuter = intval($rIdArr[1]); 
+        }
+        
         require('db/config.php');
         
         $mysqli = new mysqli($host, $username, $password, $db);                    
         if ($stmt = $mysqli->prepare("SELECT r.responseText, c.isAgree FROM Responses r, (SELECT responseId, isAgree FROM Context WHERE responseId = ? AND parentId = ?) c WHERE c.responseId = r.responseId;")) {
-            $stmt->bind_param('ii', $rId, $lastAId);
+            $stmt->bind_param('ii', $rIdInner, $lastAIdOuter);
             $stmt->execute();
             $stmt->bind_result($subpoint, $this->argumentIsAgree);
             
@@ -22,13 +36,18 @@ class CurrentArgument {
                 if(is_null($subpoint)) {
                     $stmt->close();
                     
-                    if ($stmt = $mysqli->prepare("SELECT r.responseText FROM Responses r, ResponseSubpoints rs WHERE rs.responseId = ? AND rs.subpointId = r.responseId;")) {
+                    if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText FROM Responses r, ResponseSubpoints rs WHERE rs.responseId = ? AND rs.subpointId = r.responseId;")) {
                         $stmt->bind_param('i', $rId);
                         $stmt->execute();
-                        $stmt->bind_result($subpoint);
+                        $stmt->bind_result($subpointId, $subpoint);
                         
                         while($stmt->fetch()) {
-                            $this->argumentSubpoints[] = str_replace('\\', "", $subpoint);
+                            if($rIdOuter == -1 || $rIdOuter==$subpointId) {
+                                $this->argumentSubpoints[] = str_replace('\\', "", $subpoint);
+                            }
+                            else {
+                                $this->argumentSubpoints[] = "<span style=\"color:#ccc;\">".str_replace('\\', "", $subpoint)."</span>";
+                            }
                         }
                     }
                 } else {
@@ -49,6 +68,5 @@ class CurrentArgument {
     public function getArgumentIsAgree() {           
         return intval($this->argumentIsAgree);            
     }
-    
 }
 ?>
