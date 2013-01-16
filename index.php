@@ -65,7 +65,13 @@ if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($
     
     $rPID = strip_tags($_POST["rPID"]);
     $rPID = trim($rPID);
-    $rPID = intval($rPID);
+    //$rPID = intval($rPID);
+    $rIdOuter = intval($rPID);
+        
+    if(strstr($rPID, 's') != false) {
+        $rIdArr = explode( 's', $rPID );
+        $rIdOuter = intval($rIdArr[1]); 
+    }
     
     if($vote == 1 || $vote == 0) { 
 
@@ -77,7 +83,7 @@ if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($
         $sameVote = false;        
         
         if ($stmt = $mysqli->prepare("SELECT vote FROM Votes WHERE responseId = ? AND parentId = ? AND user = ?")) {
-            $stmt->bind_param('iis', $rID, $rPID, $_SESSION['user']);
+            $stmt->bind_param('iis', $rID, $rIdOuter, $_SESSION['user']);
             $stmt->execute();
             $stmt->bind_result($voteResult);
                     
@@ -96,13 +102,13 @@ if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($
             
             if(!$hasVote) {
                 if ($stmt = $mysqli->prepare("INSERT INTO Votes (responseId, parentId, user, vote) VALUES (?,?,?,?);")) {
-                    $stmt->bind_param('iisi', $rID, $rPID, $_SESSION['user'],  $vote);
+                    $stmt->bind_param('iisi', $rID, $rIdOuter, $_SESSION['user'],  $vote);
                 
                     if($stmt->execute()) {
                         $stmt->close();
                         
                         if (($vote == 1 || $vote == 0) && $stmt = $mysqli->prepare("UPDATE Context SET yesVotes=(SELECT COUNT(*) FROM Votes WHERE Votes.responseId = ? AND Votes.parentId = ? AND vote = 1 AND Context.responseId = Votes.responseId AND  Context.parentId = Votes.parentId), noVotes=(SELECT COUNT(*) FROM Votes WHERE Votes.responseId = ? AND Votes.parentId = ? AND vote = 0 AND Context.responseId = Votes.responseId AND  Context.parentId = Votes.parentId) WHERE Context.responseId = ? AND Context.parentId = ?")) {
-                            $stmt->bind_param('iiiiii', $rID, $rPID, $rID, $rPID, $rID, $rPID);
+                            $stmt->bind_param('iiiiii', $rID, $rIdOuter, $rID, $rIdOuter, $rID, $rIdOuter);
                             $stmt->execute();
                         }
                     }
@@ -112,13 +118,13 @@ if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($
             }
             else {
                 if ($stmt = $mysqli->prepare("UPDATE Votes SET vote = ? WHERE responseId = ? AND parentId = ? AND user = ?;")) {
-                    $stmt->bind_param('iiis', $vote, $rID, $rPID, $_SESSION['user']);
+                    $stmt->bind_param('iiis', $vote, $rID, $rIdOuter, $_SESSION['user']);
                 
                     if($stmt->execute()) {
                         $stmt->close();
                         
                         if (($vote == 1 || $vote == 0) && $stmt = $mysqli->prepare("UPDATE Context SET yesVotes=(SELECT COUNT(*) FROM Votes WHERE Votes.responseId = ? AND Votes.parentId = ? AND vote = 1 AND Context.responseId = Votes.responseId AND  Context.parentId = Votes.parentId), noVotes=(SELECT COUNT(*) FROM Votes WHERE Votes.responseId = ? AND Votes.parentId = ? AND vote = 0 AND Context.responseId = Votes.responseId AND  Context.parentId = Votes.parentId) WHERE Context.responseId = ? AND Context.parentId = ?")) {
-                            $stmt->bind_param('iiiiii', $rID, $rPID, $rID, $rPID, $rID, $rPID);
+                            $stmt->bind_param('iiiiii', $rID, $rIdOuter, $rID, $rIdOuter, $rID, $rIdOuter);
                             $stmt->execute();
                         }
                     }
@@ -129,13 +135,13 @@ if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($
         } 
         else {
             if ($stmt = $mysqli->prepare("DELETE FROM Votes WHERE responseId = ? AND parentId = ? AND user = ?;")) {
-                $stmt->bind_param('iis', $rID, $rPID, $_SESSION['user']);
+                $stmt->bind_param('iis', $rID, $rIdOuter, $_SESSION['user']);
                 
                 if($stmt->execute()) {
                     $stmt->close();
                     
                     if (($vote == 1 || $vote == 0) && $stmt = $mysqli->prepare("UPDATE Context SET yesVotes=(SELECT COUNT(*) FROM Votes WHERE Votes.responseId = ? AND Votes.parentId = ? AND vote = 1 AND Context.responseId = Votes.responseId AND  Context.parentId = Votes.parentId), noVotes=(SELECT COUNT(*) FROM Votes WHERE Votes.responseId = ? AND Votes.parentId = ? AND vote = 0 AND Context.responseId = Votes.responseId AND  Context.parentId = Votes.parentId) WHERE Context.responseId = ? AND Context.parentId = ?")) {
-                        $stmt->bind_param('iiiiii', $rID, $rPID, $rID, $rPID, $rID, $rPID);
+                        $stmt->bind_param('iiiiii', $rID, $rIdOuter, $rID, $rIdOuter, $rID, $rIdOuter);
                         $stmt->execute();
                     }                    
                 }
@@ -175,9 +181,15 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
     
     $rPID = strip_tags($_POST["rPID"]);
     $rPID = trim($rPID);
-    $rPID = intval($rPID);
+    //$rPID = intval($rPID);
+    $rIdOuter = intval($rPID);
+        
+    if(strstr($rPID, 's') != false) {
+        $rIdArr = explode( 's', $rPID );
+        $rIdOuter = intval($rIdArr[1]); 
+    }
     
-    if(($rPID == 0 || responseExists($rPID))&& count($rText) != 0 && $rIsAgree != -1) {
+    if(($rIdOuter == 0 || responseExists($rIdOuter))&& count($rText) != 0 && $rIsAgree != -1) {
     
         require('db/config.php');
             
@@ -194,7 +206,7 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
                         $stmt->close();
                         
                         if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
-                            $stmt->bind_param('iiis', $newRID, $rIsAgree, $rPID, $_SESSION['user']);
+                            $stmt->bind_param('iiis', $newRID, $rIsAgree, $rIdOuter, $_SESSION['user']);
                     
                             $stmt->execute();
                         }
@@ -213,7 +225,7 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
                     $stmt->close();
                     
                     if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
-                        $stmt->bind_param('iiis', $newRID, $rIsAgree, $rPID, $_SESSION['user']);
+                        $stmt->bind_param('iiis', $newRID, $rIsAgree, $rIdOuter, $_SESSION['user']);
                 
                         $stmt->execute();
                         $stmt->close();
@@ -665,13 +677,22 @@ if($rId != 0) {
         if($rId != 0) 
         {        
             $temp_aIds = array();
-            $lastAId = 0;
+            $lastAIdOuter = 0;
             
             foreach ($aIds as $aId) {
-                $aId = intval($aId);
+                $aIdInner = intval($aId);
+                $aIdOuter = -1;
+                
+                if(strstr($aId, 's') != false) {
+                    $aIdArr = explode( 's', $aId );
+                    $aIdInner = intval($aIdArr[0]);
+                    $aIdOuter = intval($aIdArr[1]); 
+                }
+                
+                
             
                 if ($stmt = $mysqli->prepare("SELECT r.responseText, c.isAgree FROM Responses r, (SELECT responseId, isAgree FROM Context WHERE responseId = ? AND parentId = ?) c WHERE c.responseId = r.responseId;")) {
-                    $stmt->bind_param('ii', $aId, $lastAId);
+                    $stmt->bind_param('ii', $aIdInner, $lastAIdOuter);
                     $stmt->execute();
                     $stmt->bind_result($parentText, $parentIsAgree);
                     
@@ -700,21 +721,32 @@ if($rId != 0) {
 
                             $mysqli3 = new mysqli($host, $username, $password, $db);
                             
-                            if ($stmt3 = $mysqli3->prepare("SELECT r.responseText FROM Responses r, ResponseSubpoints rs WHERE rs.responseId = ? AND rs.subpointId = r.responseId;")) {
+                            if ($stmt3 = $mysqli3->prepare("SELECT r.responseId, r.responseText FROM Responses r, ResponseSubpoints rs WHERE rs.responseId = ? AND rs.subpointId = r.responseId;")) {
                                 $stmt3->bind_param('i', $aId);
                                 $stmt3->execute();
-                                $stmt3->bind_result($subpointText);
+                                $stmt3->bind_result($subpointId, $subpointText);
                             
                                 $temp = 0;
                                 
                                 while($stmt3->fetch()) {
            
                                     if($temp == 0) {
-                                        $anotherCircle = $anotherCircle .str_replace('\\', "", $subpointText);
+                                        if($aIdOuter == -1 || $aIdOuter==$subpointId) {
+                                            $anotherCircle = $anotherCircle .str_replace('\\', "", $subpointText);
+                                        }
+                                        else {
+                                            $anotherCircle = $anotherCircle ."<span style=\"color:#ccc;\">".str_replace('\\', "", $subpointText)."</span>";
+                                        }
+                                        
                                         $temp = 1;
                                     }
                                     else {
-                                        $anotherCircle = $anotherCircle . " <br/><span class=\"subpointArgumentLine\" > </span><br/> "  . str_replace('\\', "", $subpointText);
+                                        if($aIdOuter == -1 || $aIdOuter==$subpointId) {
+                                            $anotherCircle = $anotherCircle . " <br/><span class=\"subpointArgumentLine\" > </span><br/> " . str_replace('\\', "", $subpointText);
+                                        }
+                                        else {
+                                            $anotherCircle = $anotherCircle . " <br/><span class=\"subpointArgumentLine\" > </span><br/> " . "<span style=\"color:#ccc;\">".str_replace('\\', "", $subpointText)."</span>";
+                                        }
                                     }
                                     
                                 }
@@ -753,7 +785,12 @@ if($rId != 0) {
                     $hasParents = false;
                 }
                 
-                $lastAId = $aId;
+                $lastAIdOuter = intval($aId);
+                
+                if(strstr($aId, 's') != false) {
+                    $lastAIdArr = explode( 's', $aId );
+                    $lastAIdOuter = intval($lastAIdArr[1]);
+                }
             }
             
             //Close the database connection

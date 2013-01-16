@@ -9,6 +9,7 @@ class Responses {
     private $type;
     private $typeIsAgree;
     private $respID;
+    private $respIDOuter;
     private $aIds;
     private $responseArray;
     
@@ -16,6 +17,14 @@ class Responses {
         $this->type = $type;
         $this->typeIsAgree = $typeIsAgree;
         $this->respID = $respID;
+        
+        $this->respIDOuter = intval($respID);
+        
+        if(strstr($respID, 's') != false) {
+            $respIDArr = explode( 's', $respID );
+            $this->respIDOuter = intval($respIDArr[1]);
+        }
+        
         $this->aIds = $aIds;
         $this->responseArray = array();
     }
@@ -105,7 +114,7 @@ class Responses {
         $mysqli = new mysqli($host, $username, $password, $db);
         
         if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText, (c.yesVotes - c.noVotes) AS voteDifference, c.yesVotes, c.noVotes FROM Responses r, (SELECT responseId, score, yesVotes, noVotes FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId ORDER BY voteDifference DESC;")) {
-            $stmt->bind_param('ii', $this->respID, $this->typeIsAgree);
+            $stmt->bind_param('ii', $this->respIDOuter, $this->typeIsAgree);
             $stmt->execute();
             $stmt->bind_result($responseID, $responseText, $responseScore, $responseYesVotes, $responseNoVotes);
             
@@ -146,7 +155,7 @@ class Responses {
                     $mysqli2 = new mysqli($host, $username, $password, $db);
                     
                     if ($stmt2 = $mysqli2->prepare("SELECT vote FROM Votes WHERE responseId = ? AND parentId = ? AND user = ?;")) {
-                        $stmt2->bind_param('iis', $responseID, $this->respID, $_SESSION['user']);
+                        $stmt2->bind_param('iis', $responseID, $this->respIDOuter, $_SESSION['user']);
                         $stmt2->execute();
                         $stmt2->bind_result($responseVote);
                     
@@ -182,7 +191,7 @@ class Responses {
         
         foreach ($this->responseArray as $response) {
             
-            if($this->respID == 0) {
+            if(intval($this->respID) == 0) {
                 $arrJS = "&aIds[]=0";
             } else {
                 $arrJS = $this->arrayPHPToJS($this->aIds,$this->respID);
