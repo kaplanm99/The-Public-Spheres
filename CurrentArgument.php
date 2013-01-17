@@ -5,13 +5,16 @@
 class CurrentArgument {
 
     private $argumentSubpoints;
+    private $argumentSubpointIds;
     private $argumentIsAgree;
+    private $rIdInner;
+    private $rIdOuter;
     
     function __construct($rId, $lastAId) { 
         
         $lastAIdOuter = intval($lastAId);
-        $rIdInner = intval($rId);
-        $rIdOuter = -1;
+        $this->rIdInner = intval($rId);
+        $this->rIdOuter = -1;
         
         if(strstr($lastAId, 's') != false) {
             $lastAIdArr = explode( 's', $lastAId );
@@ -20,15 +23,15 @@ class CurrentArgument {
         
         if(strstr($rId, 's') != false) {
             $rIdArr = explode( 's', $rId );
-            $rIdInner = intval($rIdArr[0]);
-            $rIdOuter = intval($rIdArr[1]); 
+            $this->rIdInner = intval($rIdArr[0]);
+            $this->rIdOuter = intval($rIdArr[1]); 
         }
         
         require('db/config.php');
         
         $mysqli = new mysqli($host, $username, $password, $db);                    
         if ($stmt = $mysqli->prepare("SELECT r.responseText, c.isAgree FROM Responses r, (SELECT responseId, isAgree FROM Context WHERE responseId = ? AND parentId = ?) c WHERE c.responseId = r.responseId;")) {
-            $stmt->bind_param('ii', $rIdInner, $lastAIdOuter);
+            $stmt->bind_param('ii', $this->rIdInner, $lastAIdOuter);
             $stmt->execute();
             $stmt->bind_result($subpoint, $this->argumentIsAgree);
             
@@ -42,12 +45,9 @@ class CurrentArgument {
                         $stmt->bind_result($subpointId, $subpoint);
                         
                         while($stmt->fetch()) {
-                            if($rIdOuter == -1 || $rIdOuter==$subpointId) {
-                                $this->argumentSubpoints[] = str_replace('\\', "", $subpoint);
-                            }
-                            else {
-                                $this->argumentSubpoints[] = "<span style=\"color:#ccc;\">".str_replace('\\', "", $subpoint)."</span>";
-                            }
+                            $this->argumentSubpoints[] = str_replace('\\', "", $subpoint);
+                            
+                            $this->argumentSubpointIds[] = $subpointId;
                         }
                     }
                 } else {
@@ -65,8 +65,20 @@ class CurrentArgument {
         return $this->argumentSubpoints;            
     }
     
+    public function getArgumentSubpointId($index) {           
+        return $this->argumentSubpointIds[$index];            
+    }
+    
     public function getArgumentIsAgree() {           
         return intval($this->argumentIsAgree);            
+    }
+    
+    public function getRIdInner() {           
+        return intval($this->rIdInner);            
+    }
+    
+    public function getRIdOuter() {           
+        return intval($this->rIdOuter);            
     }
 }
 ?>

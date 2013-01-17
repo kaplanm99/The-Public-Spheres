@@ -23,6 +23,7 @@ body {
 	margin-right:auto;
 	cursor:pointer;
 	position:relative;
+    clear: both;
 }
 
 #innerCircle{
@@ -498,4 +499,14 @@ Sizes
 	text-align: center;
 	padding-top: 25px;
 	clear: both;
+}
+
+.selectEntireArgument {
+    width: 1%;
+    background-color: #ccc;
+    /*background-color: #555;*/
+    /*height: 70px;*/
+    float: left;
+    margin-top: 5px;
+    margin-left: 1%;
 }

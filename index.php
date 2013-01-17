@@ -705,7 +705,17 @@ if($rId != 0) {
                             $anotherCircle = $anotherCircle . " opposeCircle";
                         }
                         
-                        $anotherCircle = $anotherCircle . "\" onclick=\"goToRID(this, event, $aId ,'".ancestorString($temp_aIds)."');\"><h2 class=\"statement statementSize";
+                        $anotherCircle = $anotherCircle . "\" onclick=\"goToRID(this, event, '$aId' ,'".ancestorString($temp_aIds)."');\">";
+                        
+                        if(is_null($parentText)) {
+                            if($aIdOuter == -1) {
+                                $anotherCircle = $anotherCircle . "<div class=\"selectEntireArgument\" style=\"background-color:#555;\" onclick=\"goToRID(this, event, '$aIdInner','".ancestorString($temp_aIds)."');\"></div><h2 style=\"float:left;width:96%;\" class=\"statement statementSize";
+                            } else {
+                                $anotherCircle = $anotherCircle . "<div class=\"selectEntireArgument\" onclick=\"goToRID(this, event, '$aIdInner','".ancestorString($temp_aIds)."');\"></div><h2 style=\"float:left;width:96%;\" class=\"statement statementSize";
+                            }
+                        } else {
+                            $anotherCircle = $anotherCircle . "<h2 class=\"statement statementSize";
+                        }
                         
                         if($parentIsAgree == 1) {
                             $anotherCircle = $anotherCircle . " supportCircleTitle";
@@ -713,7 +723,7 @@ if($rId != 0) {
                             $anotherCircle = $anotherCircle . " opposeCircleTitle";
                         }
                         
-                        $anotherCircle = $anotherCircle ."\" onclick=\"goToRID(this, event, $aId,'".ancestorString($temp_aIds)."');\">";
+                        $anotherCircle = $anotherCircle ."\" onclick=\"goToRID(this, event, '$aId','".ancestorString($temp_aIds)."');\">";
 
                         if(is_null($parentText)) {
                 
@@ -722,7 +732,7 @@ if($rId != 0) {
                             $mysqli3 = new mysqli($host, $username, $password, $db);
                             
                             if ($stmt3 = $mysqli3->prepare("SELECT r.responseId, r.responseText FROM Responses r, ResponseSubpoints rs WHERE rs.responseId = ? AND rs.subpointId = r.responseId;")) {
-                                $stmt3->bind_param('i', $aId);
+                                $stmt3->bind_param('i', $aIdInner);
                                 $stmt3->execute();
                                 $stmt3->bind_result($subpointId, $subpointText);
                             
@@ -732,20 +742,20 @@ if($rId != 0) {
            
                                     if($temp == 0) {
                                         if($aIdOuter == -1 || $aIdOuter==$subpointId) {
-                                            $anotherCircle = $anotherCircle .str_replace('\\', "", $subpointText);
+                                            $anotherCircle = $anotherCircle ."<span onclick=\"goToRID(this, event, '".$aIdInner."s".$subpointId."' ,'".ancestorString($temp_aIds)."');\" >".str_replace('\\', "", $subpointText)."</span>";
                                         }
                                         else {
-                                            $anotherCircle = $anotherCircle ."<span style=\"color:#ccc;\">".str_replace('\\', "", $subpointText)."</span>";
+                                            $anotherCircle = $anotherCircle ."<span style=\"color:#ccc;\" onclick=\"goToRID(this, event, '".$aIdInner."s".$subpointId."' ,'".ancestorString($temp_aIds)."');\" >".str_replace('\\', "", $subpointText)."</span>";
                                         }
                                         
                                         $temp = 1;
                                     }
                                     else {
                                         if($aIdOuter == -1 || $aIdOuter==$subpointId) {
-                                            $anotherCircle = $anotherCircle . " <br/><span class=\"subpointArgumentLine\" > </span><br/> " . str_replace('\\', "", $subpointText);
+                                            $anotherCircle = $anotherCircle . " <br/><span class=\"subpointArgumentLine\" > </span><br/> " . "<span onclick=\"goToRID(this, event, '".$aIdInner."s".$subpointId."' ,'".ancestorString($temp_aIds)."');\" >".str_replace('\\', "", $subpointText)."</span>";
                                         }
                                         else {
-                                            $anotherCircle = $anotherCircle . " <br/><span class=\"subpointArgumentLine\" > </span><br/> " . "<span style=\"color:#ccc;\">".str_replace('\\', "", $subpointText)."</span>";
+                                            $anotherCircle = $anotherCircle . " <br/><span class=\"subpointArgumentLine\" > </span><br/> " . "<span style=\"color:#ccc;\" onclick=\"goToRID(this, event, '".$aIdInner."s".$subpointId."' ,'".ancestorString($temp_aIds)."');\" >".str_replace('\\', "", $subpointText)."</span>";
                                         }
                                     }
                                     
@@ -761,7 +771,7 @@ if($rId != 0) {
                         }
                         
                         
-                        $anotherCircle = $anotherCircle ."</h2>";
+                        $anotherCircle = $anotherCircle ."</h2>\n";
                         
                         $tempAID = $aId."";
                         array_push($temp_aIds, $tempAID);
@@ -807,7 +817,18 @@ if($rId != 0) {
             print(" opposeCircle");
         }
         
-        print("\"><h2 class=\"statement statementSize");
+        print("\">");
+        
+        
+        if(count($currentArgument->getArgumentSubpoints()) > 1) {
+            if($currentArgument->getRIdOuter() == -1) {
+                print("<div class=\"selectEntireArgument\" style=\"background-color:#555;\"></div><h2 style=\"float:left;width:96%;\" class=\"statement statementSize");
+            } else {                
+                print("<div class=\"selectEntireArgument\" onclick=\"goToRID(this, event, '" . $currentArgument->getRIdInner() . "','".ancestorStringNonZero($aIds)."');\" style=\"cursor:pointer;\"></div><h2 style=\"float:left;width:96%;\" class=\"statement statementSize");
+            }
+        } else {
+            print("<h2 class=\"statement statementSize");
+        }
         
         if($currentArgument->getArgumentIsAgree() == 1) {
             print(" supportCircleTitle");
@@ -821,13 +842,20 @@ if($rId != 0) {
         $temp = 0;
         
         foreach ($currentArgument->getArgumentSubpoints() as $subpoint) {
-            if($temp == 0) {
-                $curArgOutput = $curArgOutput . $subpoint;
-                $temp = 1;
+            if($temp != 0) {
+                $curArgOutput = $curArgOutput . " <br/><span class=\"subpointArgumentLine\" > </span><br/> ";
             }
-            else {
-                $curArgOutput = $curArgOutput . " <br/><span class=\"subpointArgumentLine\" > </span><br/> "  . $subpoint;
+            
+            $curArgOutput = $curArgOutput . "<span onclick=\"goToRID(this, event, '".$currentArgument->getRIdInner()."s".$currentArgument->getArgumentSubpointId($temp)."' ,'".ancestorString($aIds)."');\" ";
+            
+            if(!($currentArgument->getRIdOuter() == -1 || $currentArgument->getRIdOuter()==$currentArgument->getArgumentSubpointId($temp)) ) {
+                $curArgOutput = $curArgOutput . " style=\"color:#ccc;\" ";
             }
+            
+            $curArgOutput = $curArgOutput . ">".$subpoint."</span>";
+            
+            
+            $temp++;
         }
         
         print($curArgOutput);

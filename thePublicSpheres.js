@@ -7,7 +7,7 @@ function goToRID(el, event, rID, aIDs) {
 	var target = event.srcElement || event.target;
 
 	if( el === target ) {
-		if(rID == 0) {
+		if(rID == "0") {
 			window.location.href=("index.php");
 		} else {
 			window.location.href=("index.php?rId="+rID+aIDs);
@@ -267,5 +267,7 @@ $(document).ready(function(){
 		});
 	});	
 	
+    $(".selectEntireArgument").height($(".selectEntireArgument").parent().children(".statement").height());
+    
 	$("#mainCircleSize").css("visibility", "visible");
  });
