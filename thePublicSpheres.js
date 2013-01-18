@@ -53,8 +53,7 @@ function changeBGC(el, ratio, typeIsAgree) {
 function closeTop()
 {
 	document.getElementById('greyOverlay').style.display='none';
-	document.getElementById('loginRegisterBox').style.display='none';
-	document.getElementById('SearchPreviousResponsesBox').style.display='none';
+	document.getElementById('loginRegisterBox').style.display='none';	document.getElementById('SearchPreviousResponsesBox').style.display='none';
 }
 
 function showLoginRegister()
@@ -77,19 +76,6 @@ function showLoginRegister()
 
 function showSearchPreviousResponsesBox()
 {
-	var boxWidth = 750;
-	var boxHeight = 560;
-	
-	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
-	var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
-
-	var xPos = (screenWidth - boxWidth) * 0.5;
-	var yPos = (screenHeight - boxHeight) * 0.5;
-
-	document.getElementById('SearchPreviousResponsesBox').style.left=xPos+'px';
-	document.getElementById('SearchPreviousResponsesBox').style.top=yPos+'px';
-
-	document.getElementById('greyOverlay').style.display='block';
 	document.getElementById('SearchPreviousResponsesBox').style.display='block';
 }
 
@@ -116,6 +102,31 @@ function submitVote(selector, theVote) {
         $("#"+selector+">form>.vote").attr("value",theVote);
         $("#"+selector+">form").submit();
     }
+}
+
+function searchPreviousResponses () {
+    $.get("test.php", { query: $(this).val() },
+        function(data) {
+            $("#searchResponses").html(data);
+            /*
+            $(".searchResponse").click(function(event){
+ 
+             $(".searchResponse").each(function (index, domEle) {
+                $(domEle).css("borderWidth","1px");
+                $(domEle).css("borderColor","#000000");
+             });
+             
+             
+             $(this).css("borderWidth","5px");
+             $(this).css("borderColor","#708090");
+             var searchPreviousResponseRID = $(this).attr("id");
+             
+             $("#searchPreviousResponseRID").attr("value",searchPreviousResponseRID);
+            });
+            */
+    });
+    
+    document.getElementById('SearchPreviousResponsesBox').style.display='block';
 }
 
 $(document).ready(function(){
@@ -145,7 +156,7 @@ $(document).ready(function(){
    });
    
    //
-   
+   /*
    $("#SearchPreviousResponsesOpposeButton").click(function(event){
 	 $("#searchPreviousResponseIsAgree").attr("value",0);
 	 $("#searchPreviousResponseForm").submit();
@@ -170,7 +181,7 @@ $(document).ready(function(){
 	 $("#searchPreviousResponseIsAgree").attr("value",4);
 	 $("#searchPreviousResponseForm").submit();
    });
-   
+   */
    $("#logoutLink").click(function(event){
 	 $("#logoutForm").submit();
    });
@@ -243,30 +254,12 @@ $(document).ready(function(){
         $(domEle).height($(domEle).parent().height() - $("#responseForm").height() - $(".titleSize").outerHeight(true) - 1);
 	});
 	
-	$("#SearchPreviousResponsesButton").click(showSearchPreviousResponsesBox);
+	//$("#SearchPreviousResponsesButton").click(showSearchPreviousResponsesBox);
 	
-	$("#searchPreviousResponsesQuery").keyup(function() {
-	    $.get("test.php", { query: $("#searchPreviousResponsesQuery").val() },
-		    function(data) {
-				$("#searchResponses").html(data);
-				
-				$(".searchResponse").click(function(event){
-	 
-				 $(".searchResponse").each(function (index, domEle) {
-					$(domEle).css("borderWidth","1px");
-					$(domEle).css("borderColor","#000000");
-				 });
-				 
-				 
-				 $(this).css("borderWidth","5px");
-				 $(this).css("borderColor","#708090");
-				 var searchPreviousResponseRID = $(this).attr("id");
-				 
-				 $("#searchPreviousResponseRID").attr("value",searchPreviousResponseRID);
-			    });
-		});
-	});	
+	//$(".textbox").keyup(searchPreviousResponses);	
 	
+    $("#textAreas").on("keyup", ".textbox", searchPreviousResponses);
+    
     $(".selectEntireArgument").height($(".selectEntireArgument").parent().children(".statement").height());
     
 	$("#mainCircleSize").css("visibility", "visible");

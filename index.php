@@ -10,7 +10,7 @@ require('user-man.php');
 
 $manage_user_result = manage_user();
 
-
+/*
 if(isset($_POST["searchPreviousResponsePID"])&&isset($_POST["searchPreviousResponseRID"])&&isset($_POST["searchPreviousResponseIsAgree"]) && isset($_SESSION['user'])) {    
     $searchPreviousResponseRID = strip_tags($_POST["searchPreviousResponseRID"]);
     $searchPreviousResponseRID = trim($searchPreviousResponseRID);
@@ -51,7 +51,7 @@ if(isset($_POST["searchPreviousResponsePID"])&&isset($_POST["searchPreviousRespo
 		$mysqli->close();   
     }
 } 
-
+*/
 $rID = 0;
 
 if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($_SESSION['user'])) {    
@@ -308,7 +308,18 @@ function outputForm($respID, $aIds, $button1Text, $button2Text) {
     if(isset($_SESSION['user'])) {
         print("        
         <form id=\"responseForm\" action=\"index.php?rId=$respID".ancestorStringNonZero($aIds)."\" method=\"post\">
-        
+            <div id=\"SearchPreviousResponsesBox\"> 
+                <h1>Reuse Previous Responses</h1>
+                
+                <!--<input type=\"text\" name=\"searchPreviousResponsesQuery\" id=\"searchPreviousResponsesQuery\" size=\"60\">-->
+                
+                <div id=\"searchResponses\"></div>
+                
+                <p>
+                <img src=\"closeButton2.png\" class=\"closeButton\" />
+                </p>
+            </div>
+
             <div id=\"textAreas\">
             <textarea name=\"rText[]\" class=\"textbox textboxSize\"></textarea>
             </div>
@@ -323,8 +334,8 @@ function outputForm($respID, $aIds, $button1Text, $button2Text) {
                     print("<p id=\"SubmitResponseNeutralButton\" class=\"NeutralButton argumentSubmitButton\">Neutral</p>");
                 }
                 
-                print("<p id=\"SubmitResponse".$button2Text."Button\" class=\"".$button2Text."Button argumentSubmitButton\">".$button2Text."</p>
-                <p id=\"SearchPreviousResponsesButton\" class=\"argumentSubmitButton\">Search Previous Responses</p>");
+                print("<p id=\"SubmitResponse".$button2Text."Button\" class=\"".$button2Text."Button argumentSubmitButton\">".$button2Text."</p>");
+                //<p id=\"SearchPreviousResponsesButton\" class=\"argumentSubmitButton\">Search Previous Responses</p>");
                 
                 if($button1Text == "Support") {
                     print("<p id=\"AddAnotherSubpointButton\" class=\"argumentSubmitButton\">Add another subpoint input box</p>");
@@ -547,48 +558,6 @@ $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
 <body>
 
 <div id="greyOverlay" onClick="closeTop();"> 
-</div>
-
-<div id="SearchPreviousResponsesBox"> 
-	<h1>Search Previous Responses</h1>
-    
-    <!--<form action="index.php" method="POST">-->
-        <p>
-            <input type="text" name="searchPreviousResponsesQuery" id="searchPreviousResponsesQuery" size="60">
-            <div id="searchResponses">
-            </div>
-            
-            <?php
-            
-            print("<form id=\"searchPreviousResponseForm\" action=\"index.php?rId=".$rId."".ancestorStringNonZero($aIds)."\" method=\"post\">
-        
-            <input type=\"hidden\" id=\"searchPreviousResponsePID\" name=\"searchPreviousResponsePID\" value=\"".$rId."\" />");
-            
-            ?>
-
-            <input type="hidden" id="searchPreviousResponseRID" name="searchPreviousResponseRID" value="-1">
-            <input type="hidden" id="searchPreviousResponseIsAgree" name="searchPreviousResponseIsAgree" value="-1">
-            
-                <div class="formButtonsSPR">
-                <?php
-                    if($currentArgument->getArgumentIsAgree() == 3 || $rId == 0) {
-                        print("<p id=\"SearchPreviousResponsesCategoryButton\" class=\"CategoryButton argumentSubmitButton\">Category</p>
-                        <p id=\"SearchPreviousResponsesDiscussionButton\" class=\"DiscussionButton argumentSubmitButton\">Discussion</p>");
-                    } else {
-                        print("<p id=\"SearchPreviousResponsesSupportButton\" class=\"SupportButton argumentSubmitButton\">Support</p>
-                        <p id=\"SearchPreviousResponsesNeutralButton\" class=\"NeutralButton argumentSubmitButton\">Neutral</p>
-                        <p id=\"SearchPreviousResponsesOpposeButton\" class=\"OpposeButton argumentSubmitButton\">Oppose</p>");
-                    }      
-                ?>
-                </div>
-            
-            </form>
-        </p>
-    <!--</form>-->
-    
-	<p>
-	<img src="closeButton2.png" class="closeButton" />
-	</p>
 </div>
 
 <div id="loginRegisterBox"> 
