@@ -126,18 +126,24 @@ class Responses {
                 
                 if(is_null($responseText)) {
                 
+                    if(intval($this->respID) == 0) {
+                        $arrJS = "&aIds[]=0";
+                    } else {
+                        $arrJS = $this->arrayPHPToJS($this->aIds,$this->respID);
+                    }
+                
                     require('db/config.php');
 
                     $mysqli3 = new mysqli($host, $username, $password, $db);
                     
-                    if ($stmt3 = $mysqli3->prepare("SELECT r.responseText FROM Responses r, ResponseSubpoints rs WHERE rs.responseId = ? AND rs.subpointId = r.responseId;")) {
+                    if ($stmt3 = $mysqli3->prepare("SELECT r.responseId, r.responseText FROM Responses r, ResponseSubpoints rs WHERE rs.responseId = ? AND rs.subpointId = r.responseId;")) {
                         $stmt3->bind_param('i', $responseID);
                         $stmt3->execute();
-                        $stmt3->bind_result($subpointText);
+                        $stmt3->bind_result($subpointId, $subpointText);
                     
                         while($stmt3->fetch()) {
                             
-                            $responseSubpoints[] = str_replace('\\', "", $subpointText);
+                            $responseSubpoints[] = "<span onclick=\"goToRID(this, event, '".$responseID."s".$subpointId."' ,'".$arrJS."');\"> " . str_replace('\\', "", $subpointText) . "</span>";
                         }
                             
                         $stmt3->close();
