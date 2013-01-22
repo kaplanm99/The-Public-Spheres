@@ -10,6 +10,42 @@ require('user-man.php');
 
 $manage_user_result = manage_user();
 
+function insertResponse($text, $userName) {
+    // Insert into Responses only if it doesn't exist when searched for. Write a subfunction that first searches for it and if it doesn't exist in Responses then inserts it into responses. It should either return the existing id or the insert_id.
+    
+    require('db/config.php');
+        
+    $mysqli = new mysqli($host, $username, $password, $db);
+
+    $responseId = -1;
+    
+    if ($stmt = $mysqli->prepare("SELECT r.responseId FROM Responses r WHERE r.responseText = ?;")) {
+        $stmt->bind_param('s', $text);
+        $stmt->execute();
+        $stmt->bind_result($subpointId);
+        
+        if($stmt->fetch()) {
+            $responseId = $subpointId;
+        }
+        $stmt->close();
+    }
+    
+    if($responseId == -1) {
+        if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText, user) VALUES (?,?);")) {
+            $stmt->bind_param('ss', $text, $userName);
+            
+            if($stmt->execute()) {
+                $responseId = $stmt->insert_id;
+            }
+            $stmt->close();
+        }
+    }
+    
+    $mysqli->close();
+    
+    return $responseId;
+}
+
 /*
 if(isset($_POST["searchPreviousResponsePID"])&&isset($_POST["searchPreviousResponseRID"])&&isset($_POST["searchPreviousResponseIsAgree"]) && isset($_SESSION['user'])) {    
     $searchPreviousResponseRID = strip_tags($_POST["searchPreviousResponseRID"]);
@@ -198,21 +234,14 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
             
             foreach ($rText as $temp_subpointText) {
                 
-                if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText, user) VALUES (?,?);")) {
-                    $stmt->bind_param('ss', $temp_subpointText, $_SESSION['user']);
-                    
-                    if($stmt->execute()) {
-                        $newRID = $stmt->insert_id;
-                        $stmt->close();
+                $newRID = insertResponse($temp_subpointText, $_SESSION['user']);
+                
+                if ($newRID != -1){
+                    if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
+                        $stmt->bind_param('iiis', $newRID, $rIsAgree, $rIdOuter, $_SESSION['user']);
                         
-                        if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
-                            $stmt->bind_param('iiis', $newRID, $rIsAgree, $rIdOuter, $_SESSION['user']);
-                    
-                            $stmt->execute();
-                        }
+                        $stmt->execute();
                     }
-                    
-                    $stmt->close();
                 }
             }
         } elseif(count($rText) > 1) {
@@ -230,28 +259,23 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
                         $stmt->execute();
                         $stmt->close();
                     }
+                                        
+                    foreach ($rText as &$temp_subpointText) {
+                        $newSID = insertResponse($temp_subpointText, $_SESSION['user']);
+
+                        if ($newSID != -1){
+                            require('db/config.php');
                     
-                    if ($stmt = $mysqli->prepare("INSERT INTO Responses (responseText, user) VALUES (?,?);")) {
-                
-                        foreach ($rText as &$temp_subpointText) {
-                            $stmt->bind_param('ss', $temp_subpointText, $_SESSION['user']);
-                            
-                            if($stmt->execute()) {
-                                $newSID = $stmt->insert_id;
-                                
-                                require('db/config.php');
-                
-                                $mysqli2 = new mysqli($host, $username, $password, $db);
-                                
-                                if ($stmt2 = $mysqli2->prepare("INSERT INTO ResponseSubpoints (responseId,subpointId) VALUES (?,?);")) {
-                                    $stmt2->bind_param('ii', $newRID,$newSID);
-                                    $stmt2->execute();
-                                    $stmt2->close();
-                                }
-                                
+                            $mysqli2 = new mysqli($host, $username, $password, $db);
+                                    
+                            if ($stmt2 = $mysqli2->prepare("INSERT INTO ResponseSubpoints (responseId,subpointId) VALUES (?,?);")) {
+                                $stmt2->bind_param('ii', $newRID,$newSID);
+                                $stmt2->execute();
+                                $stmt2->close();
                             }
+                                    
+                            $mysqli2->close(); 
                         }
-                        
                     }
                 }
                 
