@@ -107,25 +107,27 @@ function submitVote(selector, theVote) {
 function searchPreviousResponses () {
     var textbox = this;
     
-    $.get("test.php", { query: $(textbox).val() },
-        function(data) {
-            $("#searchResponses").html(data);
-            
-            $(".searchResponse").click(function(event){
-             $(".searchResponse").each(function (index, domEle) {
-                $(domEle).css("borderWidth","1px");
-                $(domEle).css("borderColor","#000000");
-             });
-             
-             $(this).css("borderWidth","5px");
-             $(this).css("borderColor","#708090");
-             
-             //$(textbox).val($(this).val());
-             $(textbox).val($.trim($(this).html()));
-            });
-    });
-    
-    document.getElementById('SearchPreviousResponsesBox').style.display='block';
+    if (event.which == 32 && $(textbox).val().match(new RegExp('[a-zA-Z]')) != null) {    
+        $.get("test.php", { query: $(textbox).val() },
+            function(data) {
+                $("#searchResponses").html(data);
+                
+                $(".searchResponse").click(function(event){
+                 $(".searchResponse").each(function (index, domEle) {
+                    $(domEle).css("borderWidth","1px");
+                    $(domEle).css("borderColor","#000000");
+                 });
+                 
+                 $(this).css("borderWidth","5px");
+                 $(this).css("borderColor","#708090");
+                 
+                 //$(textbox).val($(this).val());
+                 $(textbox).val($.trim($(this).html()));
+                });
+        });
+        
+        document.getElementById('SearchPreviousResponsesBox').style.display='block';
+    }
 }
 
 $(document).ready(function(){
