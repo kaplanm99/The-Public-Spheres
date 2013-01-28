@@ -108,7 +108,7 @@ function searchPreviousResponses () {
     var textbox = this;
     
     if (event.which == 32 && $(textbox).val().match(new RegExp('[a-zA-Z]')) != null) {    
-        $.get("test.php", { query: $(textbox).val() },
+        $.get("Search.php", { query: $(textbox).val() },
             function(data) {
                 $("#searchResponses").html(data);
                 

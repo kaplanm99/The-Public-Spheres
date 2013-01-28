@@ -36,6 +36,11 @@ function insertResponse($text, $userName) {
             
             if($stmt->execute()) {
                 $responseId = $stmt->insert_id;
+                
+                require('InvertedIndex.php');
+                
+                invertedIndexInsert($responseId, $text);
+                
             }
             $stmt->close();
         }
