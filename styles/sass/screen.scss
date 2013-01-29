@@ -41,6 +41,11 @@ body {
 	background-color:#f3fff3;
 }
 
+.neutralCircle {
+	border-color:#EAC799;
+	background-color:#fffbf3;
+}
+
 .constructiveButton{
     vertical-align:text-top;
 }
@@ -66,7 +71,7 @@ body {
 	color:#700;
 }
 */
-.SupportLabel {
+.supportLabel {
 	position: absolute;
 	top: -5px;
 	left: 25px;
@@ -75,12 +80,22 @@ body {
     font-size:12px;
 }
 
-.OpposeLabel {
+.neutralLabel {
 	position: absolute;
-	top: -10px;
+	top: -5px;
+	left: 48%;
+	color:#EAC799;
+	background-color:#F7F7F7;
+    font-size:12px;
+}
+
+.opposeLabel {
+	position: absolute;
+	top: -5px;
 	right: 25px;
 	color: #700;
 	background-color: #F7F7F7;
+    font-size:12px;
 }
 
 .SupportTitle {

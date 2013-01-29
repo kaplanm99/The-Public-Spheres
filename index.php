@@ -701,7 +701,10 @@ if($rId != 0) {
                             $anotherCircle = $anotherCircle . " supportCircle";
                         } elseif($parentIsAgree == 0){
                             $anotherCircle = $anotherCircle . " opposeCircle";
+                        } elseif($parentIsAgree == 4){
+                            $anotherCircle = $anotherCircle . " neutralCircle";
                         }
+                        
                         
                         $anotherCircle = $anotherCircle . "\" onclick=\"goToRID(this, event, '$aId' ,'".ancestorString($temp_aIds)."');\">";
                         
@@ -719,7 +722,10 @@ if($rId != 0) {
                             $anotherCircle = $anotherCircle . " supportCircleTitle";
                         } elseif($parentIsAgree == 0){
                             $anotherCircle = $anotherCircle . " opposeCircleTitle";
+                        } elseif($parentIsAgree == 4){
+                            $anotherCircle = $anotherCircle . " neutralCircleTitle";
                         }
+                        
                         
                         $anotherCircle = $anotherCircle ."\" onclick=\"goToRID(this, event, '$aId','".ancestorString($temp_aIds)."');\">";
 
@@ -780,6 +786,8 @@ if($rId != 0) {
                             $parentLabel = "<p class=\"supportLabel\">Support</p>";
                         } elseif($parentIsAgree == 0){
                             $parentLabel = "<p class=\"opposeLabel\">Oppose</p>";
+                        } elseif($parentIsAgree == 4) {
+                            $parentLabel = "<p class=\"neutralLabel\">Neutral</p>";
                         } elseif($parentIsAgree == 2) {
                             $hasParents = false;
                         }
@@ -813,6 +821,8 @@ if($rId != 0) {
             print(" supportCircle");
         } elseif($currentArgument->getArgumentIsAgree() == 0){
             print(" opposeCircle");
+        } elseif($currentArgument->getArgumentIsAgree() == 4){
+            print(" neutralCircle");
         }
         
         print("\">");
@@ -832,6 +842,8 @@ if($rId != 0) {
             print(" supportCircleTitle");
         } elseif($currentArgument->getArgumentIsAgree() == 0){
             print(" opposeCircleTitle");
+        } elseif($currentArgument->getArgumentIsAgree() == 4){
+            print(" neutralCircleTitle");
         }
         
         print("\">");
@@ -864,6 +876,8 @@ if($rId != 0) {
             print("<p class=\"supportLabel\">Support</p>");
         } elseif($currentArgument->getArgumentIsAgree() == 0){
             print("<p class=\"opposeLabel\">Oppose</p>");
+        } elseif($currentArgument->getArgumentIsAgree() == 4) {
+            print("<p class=\"neutralLabel\">Neutral</p>");
         }
         
         if($currentArgument->getArgumentIsAgree() == 3) {
