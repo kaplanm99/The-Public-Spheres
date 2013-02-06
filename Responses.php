@@ -113,7 +113,7 @@ class Responses {
 
         $mysqli = new mysqli($host, $username, $password, $db);
         
-        if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText, (c.yesVotes - c.noVotes) AS voteDifference, c.yesVotes, c.noVotes FROM Responses r, (SELECT responseId, score, yesVotes, noVotes FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId ORDER BY voteDifference DESC;")) {
+        if ($stmt = $mysqli->prepare("SELECT r.responseId, r.responseText, (c.yesVotes - c.noVotes) AS voteDifference, c.yesVotes, c.noVotes FROM Responses r, (SELECT responseId, yesVotes, noVotes FROM Context WHERE parentId = ? AND isAgree = ?) c WHERE c.responseId = r.responseId ORDER BY voteDifference DESC;")) {
             $stmt->bind_param('ii', $this->respIDOuter, $this->typeIsAgree);
             $stmt->execute();
             $stmt->bind_result($responseID, $responseText, $responseScore, $responseYesVotes, $responseNoVotes);
@@ -151,7 +151,7 @@ class Responses {
                     
                     $mysqli3->close();
                 } else {
-                    $responseSubpoints[] = $responseText;
+                    $responseSubpoints[] = str_replace('\\', "", $responseText);
                 }
                 
                 if(isset($_SESSION['user'])) {
@@ -236,7 +236,7 @@ class Responses {
             </form>
             </div>");           
             
-            if($this->typeIsAgree == 0 || $this->typeIsAgree == 1 || $this->typeIsAgree == 2) {
+            if($this->typeIsAgree == 0 || $this->typeIsAgree == 1 || $this->typeIsAgree == 2 || $this->typeIsAgree == 4) {
                 $ratio = $this->agreeDisagreeRatio($response->getResponseID());
                 
                 print("<script type=\"text/javascript\">$(document).ready(function(){changeBGC(document.getElementById(\"".$response->getResponseID()."\"), $ratio, " . $this->typeIsAgree . ");});</script>");

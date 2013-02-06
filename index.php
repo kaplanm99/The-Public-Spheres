@@ -2,6 +2,8 @@
 /* Copyright (c) 2012 Michael Andrew Kaplan
  * See the file license.txt for copying permission. */
 
+require('InvertedIndex.php');                 
+ 
 if(isset($_POST["op"]) && $_POST["op"] == "logout" && isset($_SESSION['user'])) {
     unset($_SESSION['user']);
 }
@@ -37,8 +39,7 @@ function insertResponse($text, $userName) {
             if($stmt->execute()) {
                 $responseId = $stmt->insert_id;
                 
-                require('InvertedIndex.php');
-                
+                // Fix this
                 invertedIndexInsert($responseId, $text);
                 
             }
@@ -264,24 +265,24 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
                         $stmt->execute();
                         $stmt->close();
                     }
-                                        
+                   
+                    require('db/config.php');
+                    
+                    $mysqli2 = new mysqli($host, $username, $password, $db);
+                    
                     foreach ($rText as &$temp_subpointText) {
                         $newSID = insertResponse($temp_subpointText, $_SESSION['user']);
-
+                        
                         if ($newSID != -1){
-                            require('db/config.php');
-                    
-                            $mysqli2 = new mysqli($host, $username, $password, $db);
-                                    
                             if ($stmt2 = $mysqli2->prepare("INSERT INTO ResponseSubpoints (responseId,subpointId) VALUES (?,?);")) {
                                 $stmt2->bind_param('ii', $newRID,$newSID);
                                 $stmt2->execute();
                                 $stmt2->close();
                             }
-                                    
-                            $mysqli2->close(); 
                         }
                     }
+                    
+                    $mysqli2->close();
                 }
                 
                 $stmt->close();

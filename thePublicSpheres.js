@@ -37,6 +37,11 @@ function changeBGC(el, ratio, typeIsAgree) {
 		maxSat = 0.5;
 		value = 0.9176470588235294;
 		break;
+        case 4:
+		hue = 0.09523809523809527;
+		maxSat = 0.54871794871794873;
+		value = 0.9176470588235294;
+		break;
 	}
 	
 	 if(ratio < 1) {
