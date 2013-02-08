@@ -405,6 +405,8 @@ function outputDiscussionContents($respID, $aIds) {
     $disagreeResponses->outputResponses();
     
     outputForm($respID, $aIds, "Support", "Oppose");
+    
+    print("</div>");
 }
 
 function outputCategoryContents($respID, $aIds) {
@@ -424,6 +426,7 @@ function outputCategoryContents($respID, $aIds) {
     
     outputForm($respID, $aIds, "Category", "Discussion");
     
+    print("</div>");
 }
 
 function isSubpoint($responseId, $subpointId) {
@@ -887,6 +890,11 @@ if($rId != 0) {
             outputDiscussionContents($rId, $aIds);
         }
         
+        print("</div>");
+        
+        foreach ($aIds as $aId) {
+            print("</div>");
+        }
     ?>
     
     </div>    
@@ -919,6 +927,23 @@ if($rId != 0) {
     }
 
 ?>
+
+<div style="
+    width: 1270px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+">
+    <p style="
+    float: left;
+    margin-left: 100px;
+    margin-right: 300px;">
+        Text is available under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US">Creative Commons Attribution 3.0 Unported License</a>.
+    </p>
+    <p>
+        <a href="mailto:mak364@cornell.edu">Provide Feedback</a>
+    </p>
+</div>
 
 </body>
 </html>
