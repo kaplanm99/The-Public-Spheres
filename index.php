@@ -52,48 +52,6 @@ function insertResponse($text, $userName) {
     return $responseId;
 }
 
-/*
-if(isset($_POST["searchPreviousResponsePID"])&&isset($_POST["searchPreviousResponseRID"])&&isset($_POST["searchPreviousResponseIsAgree"]) && isset($_SESSION['user'])) {    
-    $searchPreviousResponseRID = strip_tags($_POST["searchPreviousResponseRID"]);
-    $searchPreviousResponseRID = trim($searchPreviousResponseRID);
-    
-    if(strlen($searchPreviousResponseRID) != 0) {
-        $searchPreviousResponseRID = intval($searchPreviousResponseRID);
-    }
-    else {
-        $searchPreviousResponseRID = -1;
-    }
-    
-    $searchPreviousResponseIsAgree = strip_tags($_POST["searchPreviousResponseIsAgree"]);
-    $searchPreviousResponseIsAgree = trim($searchPreviousResponseIsAgree);
-    
-    if($searchPreviousResponseIsAgree == "0" || $searchPreviousResponseIsAgree == "1" || $searchPreviousResponseIsAgree == "2" || $searchPreviousResponseIsAgree == "3" || $searchPreviousResponseIsAgree == "4") {
-        $searchPreviousResponseIsAgree = intval($searchPreviousResponseIsAgree);
-    } else {
-        $searchPreviousResponseIsAgree = -1;
-    }
-    
-    $searchPreviousResponsePID = strip_tags($_POST["searchPreviousResponsePID"]);
-    $searchPreviousResponsePID = trim($searchPreviousResponsePID);
-    $searchPreviousResponsePID = intval($searchPreviousResponsePID);
-    
-    if(($searchPreviousResponsePID == 0 || responseExists($searchPreviousResponsePID))&& $searchPreviousResponseRID != -1 && $searchPreviousResponseIsAgree != -1) {    
-		require('db/config.php');
-		
-		$mysqli = new mysqli($host, $username, $password, $db);                    
-		
-		if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
-			$stmt->bind_param('iiis', $searchPreviousResponseRID, $searchPreviousResponseIsAgree, $searchPreviousResponsePID, $_SESSION['user']);
-			
-			$stmt->execute();
-		}
-			
-		$stmt->close();
-			
-		$mysqli->close();   
-    }
-} 
-*/
 $rID = 0;
 
 if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($_SESSION['user'])) {    
@@ -365,7 +323,6 @@ function outputForm($respID, $aIds, $button1Text, $button2Text) {
                 }
                 
                 print("<p id=\"SubmitResponse".$button2Text."Button\" class=\"".$button2Text."Button argumentSubmitButton\">".$button2Text."</p>");
-                //<p id=\"SearchPreviousResponsesButton\" class=\"argumentSubmitButton\">Search Previous Responses</p>");
                 
                 if($button1Text == "Support") {
                     print("<p id=\"AddAnotherSubpointButton\" class=\"argumentSubmitButton\">Add another subpoint input box</p>");
@@ -593,6 +550,30 @@ $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
 <div id="greyOverlay" onClick="closeTop();"> 
 </div>
 
+<div id="howto">
+    <p>
+	<img src="closeButton2.png" class="closeButton" />
+	</p>
+    <div>
+        <h1>How-to Guide</h1>
+        <p>
+        This web application is intended to be a resource for fully mapped out arguments so that people can learn about, contribute to, and participate in arguments in areas that interest them in a deep and detailed manner. Users can contribute, organize, and vote on arguments for their own benefit and for the benefit of others.
+        <br/><br/>
+        The interface can be navigated by clicking on the large or small rectangles to open up that level of argument. 
+        <br/><br/>
+        Categories are for organizing discussions, making it faster and easier to find a personally interesting discussion. There are 4 types of arguments: Discussion, Support, Neutral, and Oppose. Discussions are debate statements that others will respond to. Each Discussion, Supporting, Neutral, or Opposing arguments can have arguments made to it. This allows arguments to be threaded and reach a deep level of analysis.
+        <br/><br/>
+        You can browse the interface by clicking on responses or outer circles to open up to that level.
+        <br/><br/>
+        Add an argument by entering text in the text box at the bottom of the interface and clicking the relevant button. If you see a previous argument that is equivalent to the argument that you are typing, click on that argument to use it instead. Using the existing response in the new context to prevent having a redundant critique of that response when the critique has already been made on the argument elsewhere.
+        <br/><br/>
+        You can provide feedback on whether an argument is constructive or not by pressing the Yes or No button below each argument. When you vote, the page will refresh and the button that you clicked will be colored to indicate your vote. You can undo a vote by clicking again on the triangle you previously clicked.
+        <br/><br/>
+        Please break your arguments down into subpoints by clicking on the Add another subpoint button for each subpoint and typing a subpoint in each textbox.
+        </p>
+    </div>
+</div>
+
 <div id="loginRegisterBox"> 
 	<p>
 	<img src="closeButton2.png" class="closeButton" />
@@ -655,6 +636,16 @@ if($rId != 0) {
 
 <div id="mainCircleSize">
     <div class="circle circleSize" onclick="goToRID(this, event, 0 ,'');">
+        <p id="search" style="
+        position: absolute;  top: 5px;  
+        right: 275px;  cursor: pointer;  color: blue;">
+            Search
+        </p>
+        <p id="howtoLink" style="
+        position: absolute;  top: 5px;  
+        left: 275px;  cursor: pointer;  color: blue;">
+            How-to Guide
+        </p>
         <h2 class="statement statementSize" onclick="goToRID(this, event, 0, '');">The Public Spheres: Ideas Taking Shape</h2>
         
 
@@ -906,6 +897,16 @@ if($rId != 0) {
 
 <div id="mainCircleSize">
 <div id="innerCircle" class="circle circleSize">
+    <p id="search" style="
+    position: absolute;  top: 5px;  
+    right: 275px;  cursor: pointer;  color: blue;">
+        Search
+    </p>
+    <p id="howtoLink" style="
+    position: absolute;  top: 5px;  
+    left: 275px;  cursor: pointer;  color: blue;">
+        How-to Guide
+    </p>
     <h2 class="statement statementSize">The Public Spheres: Ideas Taking Shape</h2>
     <?php
         if(isset($_SESSION['user'])) {

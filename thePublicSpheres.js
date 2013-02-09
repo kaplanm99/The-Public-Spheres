@@ -58,7 +58,26 @@ function changeBGC(el, ratio, typeIsAgree) {
 function closeTop()
 {
 	document.getElementById('greyOverlay').style.display='none';
-	document.getElementById('loginRegisterBox').style.display='none';	document.getElementById('SearchPreviousResponsesBox').style.display='none';
+	document.getElementById('howto').style.display='none';
+    document.getElementById('loginRegisterBox').style.display='none';
+	document.getElementById('SearchPreviousResponsesBox').style.display='none';
+}
+
+function showHowTo() {
+	var boxWidth = 800;
+	var boxHeight = 465;
+    
+	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
+	var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
+
+	var xPos = (screenWidth - boxWidth) * 0.5;
+	var yPos = (screenHeight - boxHeight) * 0.5;
+
+	document.getElementById('howto').style.left=xPos+'px';
+	document.getElementById('howto').style.top=yPos+'px';
+
+	document.getElementById('greyOverlay').style.display='block';
+	document.getElementById('howto').style.display='block';
 }
 
 function showLoginRegister()
@@ -161,33 +180,6 @@ $(document).ready(function(){
 	 $("#responseForm").submit();
    });
    
-   //
-   /*
-   $("#SearchPreviousResponsesOpposeButton").click(function(event){
-	 $("#searchPreviousResponseIsAgree").attr("value",0);
-	 $("#searchPreviousResponseForm").submit();
-   });
-
-   $("#SearchPreviousResponsesSupportButton").click(function(event){
-	 $("#searchPreviousResponseIsAgree").attr("value",1);
-	 $("#searchPreviousResponseForm").submit();
-   });
-   
-	$("#SearchPreviousResponsesDiscussionButton").click(function(event){
-	 $("#searchPreviousResponseIsAgree").attr("value",2);
-	 $("#searchPreviousResponseForm").submit();
-   });
-   
-   $("#SearchPreviousResponsesCategoryButton").click(function(event){
-	 $("#searchPreviousResponseIsAgree").attr("value",3);
-	 $("#searchPreviousResponseForm").submit();
-   });
-   
-   $("#SearchPreviousResponsesNeutralButton").click(function(event){
-	 $("#searchPreviousResponseIsAgree").attr("value",4);
-	 $("#searchPreviousResponseForm").submit();
-   });
-   */
    $("#logoutLink").click(function(event){
 	 $("#logoutForm").submit();
    });
@@ -213,18 +205,9 @@ $(document).ready(function(){
    
    attachArrowMouseEvents("yesButton");
    attachArrowMouseEvents("noButton");
-  
-  /*  
-  $(".forkIcon").mouseover(function(){
-	 $(this).children('img').attr("src", "forkHighlighted.png");
-   });
-   
-   $(".forkIcon").mouseout(function(){
-	 $(this).children('img').attr("src", "fork.png");
-   });
-  */ 
    
    $("#loginRegisterLink").click(showLoginRegister);
+   $("#howtoLink").click(showHowTo);
    
    var circleHeight = 760;
    var statementHeights = new Array();
@@ -259,8 +242,6 @@ $(document).ready(function(){
 	$(".circleColumnSize").each(function (index, domEle) {
         $(domEle).height($(domEle).parent().height() - $("#responseForm").height() - $(".titleSize").outerHeight(true) - 1);
 	});
-	
-	//$("#SearchPreviousResponsesButton").click(showSearchPreviousResponsesBox);
 	
 	//$(".textbox").keyup(searchPreviousResponses);	
 	
