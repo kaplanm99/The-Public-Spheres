@@ -206,8 +206,8 @@ body {
 .textbox {
 	margin-left:auto;
 	margin-right:auto;
+    float:left;
 	padding:5px;
-	clear: both;
 	background-color:#f7f7f7;
 	@include border-radius(10px);
 }
@@ -355,11 +355,17 @@ Sizes
     margin-right: 10px;
 }
 
+.textboxLine {
+    width: 10px;
+    float: left;
+    background-color: black;
+    height: 1px;
+    margin-top: 50px;
+}
+
 .textboxSize {
 	width: 480px;
     height: 100px;
-    margin-left: 5px;
-    margin-right: 5px;
 }
 
 #responseForm {

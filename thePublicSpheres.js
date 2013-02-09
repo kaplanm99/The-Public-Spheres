@@ -187,7 +187,7 @@ $(document).ready(function(){
    $("#AddAnotherSubpointButton").click(function(event){
      if(subpointCount < 6) {
          subpointCount++;
-         $("#textAreas").append('<textarea name="rText[]" class="textbox textboxSize"></textarea>');
+         $("#textAreas").append('<span class="textboxLine"></span><textarea name="rText[]" class="textbox textboxSize"></textarea>');
          var tempWidth = ($("#innerCircle>.circleresponsessize").innerWidth()-(subpointCount*25))/subpointCount;
          
          if(tempWidth > 480) {
