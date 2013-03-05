@@ -636,11 +636,11 @@ if($rId != 0) {
 
 <div id="mainCircleSize">
     <div class="circle circleSize" onclick="goToRID(this, event, 0 ,'');">
-        <p id="search" style="
+        <!--<p id="search" style="
         position: absolute;  top: 5px;  
         right: 275px;  cursor: pointer;  color: blue;">
             Search
-        </p>
+        </p>-->
         <p id="howtoLink" style="
         position: absolute;  top: 5px;  
         left: 275px;  cursor: pointer;  color: blue;">
@@ -897,11 +897,13 @@ if($rId != 0) {
 
 <div id="mainCircleSize">
 <div id="innerCircle" class="circle circleSize">
+    <!--
     <p id="search" style="
     position: absolute;  top: 5px;  
     right: 275px;  cursor: pointer;  color: blue;">
         Search
     </p>
+    -->
     <p id="howtoLink" style="
     position: absolute;  top: 5px;  
     left: 275px;  cursor: pointer;  color: blue;">
