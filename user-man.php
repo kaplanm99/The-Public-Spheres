@@ -135,6 +135,7 @@ function manage_user() {
         }
 
         $what = 'User created';
+        $_SESSION['user'] = $user;
     } else {
         $hash = '*'; // In case the user is not found
         if(!($stmt = $db->prepare('SELECT pass FROM Users WHERE user=?')))

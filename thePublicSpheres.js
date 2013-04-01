@@ -245,7 +245,7 @@ $(document).ready(function(){
 	});
 	
 	$(".circleResponses").each(function (index, domEle) {
-        $(domEle).height($(domEle).parent().height() - ($(domEle).parent().children(".statement").height()+9));
+        $(domEle).height($(domEle).parent().height() - ($(domEle).parent().children(".statement").height()+17));
 	});
 
 	/*

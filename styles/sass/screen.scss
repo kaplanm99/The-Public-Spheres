@@ -334,7 +334,7 @@ Sizes
 }
 
 .titleSize {
-	width:100px;
+	width:200px;
 	font-size:14px;
 	margin-top:2px;
 	margin-bottom:2px;
@@ -545,14 +545,14 @@ Sizes
 
 #user {
 	position: absolute;
-    top: 5px;
-    left: 25px;
+    top: 8px;
+    right:220px;
 }
 
 #logoutLink {
-	position: absolute;
+	/*position: absolute;
     top: 8px;
-    right: 275px;
+    right: 275px;*/
 	cursor:pointer;
 	color:blue;
 }

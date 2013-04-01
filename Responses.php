@@ -191,9 +191,21 @@ class Responses {
             print("<div class=\"".$this->type."CircleColumn twoCircleColumnSize\">");
         }
         
-        print("    
-            <h3 class=\"".$this->type."Title titleSize\">".$this->type."</h3>
-            <div class=\"responses responsesSize\">");
+        print("<h3 class=\"".$this->type."Title titleSize\">");
+        
+        if($this->type == "Support"){
+            print("is supported by");
+        } elseif($this->type == "Oppose"){
+            print("is opposed by");
+        } elseif($this->type == "Neutral") {
+            print("is responded to neutrally by");
+        } elseif($this->type == "Categories") {
+            print("contains the category");
+        } elseif($this->type == "Discussions") {
+            print("contains the discussion");
+        }
+        
+        print("<img src=\"titleArrow.png\" style=\" height: 14px; position: relative;  top: 1px;\"></h3><div class=\"responses responsesSize\">");
         
         foreach ($this->responseArray as $response) {
             

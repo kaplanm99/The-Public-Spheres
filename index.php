@@ -669,10 +669,9 @@ if($rId != 0) {
 
     <?php
         if(isset($_SESSION['user'])) {
-            print ("<p id=\"user\">Welcome, ".htmlspecialchars($_SESSION['user'])."</p>
-                <form id=\"logoutForm\" action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">
-                    <p id=\"logoutLink\">Logout <input type=\"hidden\" name=\"op\" value=\"logout\"></p>
-                </form>");
+            print ("<form id=\"logoutForm\" action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\"><p id=\"user\">Welcome, ".htmlspecialchars($_SESSION['user'])."
+                    <span id=\"logoutLink\">Logout <input type=\"hidden\" name=\"op\" value=\"logout\"></span>
+                </p></form>");
         }
         else {
             print ("<p class=\"loginRegisterLink loginRegisterTop\">Create Account/Sign In</p>");
@@ -922,10 +921,9 @@ if($rId != 0) {
     <h2 class="statement statementSize">The Public Spheres: Ideas Taking Shape</h2>
     <?php
         if(isset($_SESSION['user'])) {
-            print ("<p id=\"user\">Welcome, ".htmlspecialchars($_SESSION['user'])."</p>
-                <form id=\"logoutForm\" action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">
-                    <p id=\"logoutLink\">Logout <input type=\"hidden\" name=\"op\" value=\"logout\"></p>
-                </form>");
+            print ("<form id=\"logoutForm\" action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\"><p id=\"user\">Welcome, ".htmlspecialchars($_SESSION['user'])."
+                    <span id=\"logoutLink\">Logout <input type=\"hidden\" name=\"op\" value=\"logout\"></span>
+                </p></form>");
         }
         else {
             print ("<p class=\"loginRegisterLink loginRegisterTop\">Create Account/Sign In</p>");
