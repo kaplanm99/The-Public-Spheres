@@ -332,7 +332,7 @@ function outputForm($respID, $aIds, $button1Text, $button2Text) {
         </form>");
     }
     else {
-         print("<p class=\"responseFormPlaceholder\">Login to add a response</p>");
+         print("<p class=\"responseFormPlaceholder\"><span class=\"loginRegisterLink\">Create Account/Sign In</span> to add a response</p>");
     }
 }
 
@@ -579,54 +579,72 @@ $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
 	<img src="closeButton2.png" class="closeButton" />
 	</p>
     
-    <div>
-        <h1>Register</h1>
-        <p>
-            <?php
+    <div style="float:left">
+        <h1>Create Account</h1><br>
+        <?php
             print("<form action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">");
-            ?>
+        ?>
                 <input type="hidden" name="op" value="new">
-                Username:<br>
-                <input type="text" name="user" size="60"><br>
-                Password:<br>
-                <input type="password" name="pass" size="60"><br>
-                <input type="submit" value="Create user">
+                Username:
+                <input type="text" name="user" size="40"><br>
+                Password:
+                <input type="password" name="pass" size="40"><br>
+                <br>
+<textarea style="
+    width: 370px;
+    height: 280px;
+">We are asking you to take part in an evaluation of the Public Spheres. This project is carried out by Michael Kaplan at Cornell University with the purpose of understanding how people discuss topics online to better build tools for online deliberation. 
+
+If you agree to participate, you will be asked to fill a short demographics survey, create an account, and then interact with the Public Spheres website. You can leave the website and get back to it later and log in again with the account you created. 
+There are no particular risks or benefits associated with this interview.
+There is no compensation for your participation.
+
+Your answers will be confidential. We will record your activities on the website, but we collect no identifying information, and the only way in which we identify you is through the account name you create. Your account name will not be displayed to others, and we will use a code to connect your recorded activities to your account name. 
+
+Taking part is completely voluntary. If you decide not to take part or to skip some of the questions, it will not affect your current or future relationship with Cornell University. You are free to withdraw at any time.
+Please ask any questions you have now. If you have questions later, you may contact the researcher: Michael Kaplan, at mak364@cornell.edu, or the faculty supervisor, Gilly Leshed at gl87@cornell.edu.
+
+If you have any questions or concerns regarding your rights as a participant in this class project, you may contact the Institutional Review Board (IRB) at 607-255-5138 or access their website at http://www.irb.cornell.edu. You may also report your concerns or complaints anonymously through http://www.ethicspoint.com or by calling toll free at 1- 866-293-3077. Ethicspoint is an independent organization that serves as a liaison between the University and the person bringing the complaint so that anonymity can be ensured.
+
+Statement of Age of Subject and Consent
+By clicking the button below I agree that I am over 18, have read the consent form, and agree to participate in this study. </textarea>
+<br/><br>
+                <input type="submit" value="I agree, create account">
             </form>
-        </p>
+        <p></p>
+    </div>               
+    <div style="
+        float: left;
+        height: 400px;
+        border-right: 1px solid black;
+        margin-left: 20px;
+        margin-right: 20px;">
+    </div>
+    <div style="float: left;">
+        <h1>Sign in</h1><br>
+        <?php
+            print("<form action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">");
+        ?>
+            <input type="hidden" name="op" value="login">
+            Username:
+            <input type="text" name="user" size="40"><br>
+            Password:
+            <input type="password" name="pass" size="40">
+            
+            <br><br>
+            
+            <input type="submit" value="Sign in">
+        </form>
     </div>
     
-    <div>
-        <h1>Login</h1>
-        <p>
-            <?php
-            print("<form action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">");
-            ?>
-                <input type="hidden" name="op" value="login">
-                Username:<br>
-                <input type="text" name="user" size="60"><br>
-                Password:<br>
-                <input type="password" name="pass" size="60"><br>
-                <input type="submit" value="Log in">
-            </form>
-        </p>
-    </div>
+</div>
 
+<div id="feedback">
+    <p>
+	<img src="closeButton2.png" class="closeButton" />
+	</p>
     <div>
-        <h1>Change password</h1>
-        <p>
-            <?php
-            print("<form action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">");
-            ?>
-                <input type="hidden" name="op" value="change">
-                Username:<br>
-                <input type="text" name="user" size="60"><br>
-                Current password:<br>
-                <input type="password" name="pass" size="60"><br>
-                New password:<br>
-                <input type="password" name="newpass" size="60"><br>
-                <input type="submit" value="Change password">
-            </form>
-        </p>
+        
     </div>
 </div>
 
@@ -642,7 +660,7 @@ if($rId != 0) {
             Search
         </p>-->
         <p id="howtoLink" style="
-        position: absolute;  top: 5px;  
+        position: absolute;  top: 8px;  
         left: 275px;  cursor: pointer;  color: blue;">
             How-to Guide
         </p>
@@ -657,7 +675,7 @@ if($rId != 0) {
                 </form>");
         }
         else {
-            print ("<p id=\"loginRegisterLink\">Login/Register</p>");
+            print ("<p class=\"loginRegisterLink loginRegisterTop\">Create Account/Sign In</p>");
         }
     
         $parentsOutputText = ""; 
@@ -691,15 +709,6 @@ if($rId != 0) {
                     
                     if($stmt->fetch()) {
                         $anotherCircle = "<div class=\"circle circleSize";
-                        
-                        if($parentIsAgree == 1) {
-                            $anotherCircle = $anotherCircle . " supportCircle";
-                        } elseif($parentIsAgree == 0){
-                            $anotherCircle = $anotherCircle . " opposeCircle";
-                        } elseif($parentIsAgree == 4){
-                            $anotherCircle = $anotherCircle . " neutralCircle";
-                        }
-                        
                         
                         $anotherCircle = $anotherCircle . "\" onclick=\"goToRID(this, event, '$aId' ,'".ancestorString($temp_aIds)."');\">";
                         
@@ -769,7 +778,6 @@ if($rId != 0) {
                             $anotherCircle = $anotherCircle .str_replace('\\', "", $parentText);
                         }
                         
-                        
                         $anotherCircle = $anotherCircle ."</h2>\n";
                         
                         $tempAID = $aId."";
@@ -778,15 +786,20 @@ if($rId != 0) {
                         $parentLabel = "";
                         
                         if($parentIsAgree == 1) {
-                            $parentLabel = "<p class=\"supportLabel\">Support</p>";
+                            $parentLabel = "<p class=\"titleArrowImg\" style=\"color: #b6d7a8;\"><span style=\"background-color: #F7F7F7;\">is supported by<img src=\"titleArrow.png\" style=\" height: 11px; position: relative;  top: 1px;\"></span></p>";
+                        
                         } elseif($parentIsAgree == 0){
-                            $parentLabel = "<p class=\"opposeLabel\">Oppose</p>";
+                            $parentLabel = "<p class=\"titleArrowImg\" style=\"color: #ea9999;\"><span style=\"background-color: #F7F7F7;\">is opposed by<img src=\"titleArrow.png\" style=\" height: 11px; position: relative;  top: 1px;\"></span></p>";
                         } elseif($parentIsAgree == 4) {
-                            $parentLabel = "<p class=\"neutralLabel\">Neutral</p>";
+                            $parentLabel = "<p class=\"titleArrowImg\" style=\"color: #EAC799;\"><span style=\"background-color: #F7F7F7;\">is responded to neutrally by<img src=\"titleArrow.png\" style=\" height: 11px; position: relative;  top: 1px;\"></span></p>";
+                        } elseif($parentIsAgree == 3) {
+                            $parentLabel = "<p class=\"titleArrowImg\" style=\"color: #99B6EA;\"><span style=\"background-color: #F7F7F7;\">contains the category<img src=\"titleArrow.png\" style=\" height: 11px; position: relative;  top: 1px;\"></span></p>";
                         } elseif($parentIsAgree == 2) {
-                            $hasParents = false;
+                            $parentLabel = "<p class=\"titleArrowImg\" style=\"color: #EAC799;\"><span style=\"background-color: #F7F7F7;\">contains the discussion<img src=\"titleArrow.png\" style=\" height: 11px; position: relative;  top: 1px;\"></span></p>";
                         }
+                        
                         $parentsOutputText = $parentsOutputText. $anotherCircle . $parentLabel;
+                        
                     } else {
                         $hasParents = false;
                     }
@@ -811,14 +824,6 @@ if($rId != 0) {
         }
         
         print("<div id=\"innerCircle\" class=\"circle circleSize");
-        
-        if($currentArgument->getArgumentIsAgree() == 1) {
-            print(" supportCircle");
-        } elseif($currentArgument->getArgumentIsAgree() == 0){
-            print(" opposeCircle");
-        } elseif($currentArgument->getArgumentIsAgree() == 4){
-            print(" neutralCircle");
-        }
         
         print("\">");
         
@@ -866,13 +871,18 @@ if($rId != 0) {
         print($curArgOutput);
     
         print("</h2>");
-                
+        
         if($currentArgument->getArgumentIsAgree() == 1) {
-            print("<p class=\"supportLabel\">Support</p>");
+            print("<p class=\"titleArrowImg\" style=\"color: #b6d7a8;\"><span style=\"background-color: #F7F7F7;\">is supported by<img src=\"titleArrow.png\" style=\" height: 11px; position: relative;  top: 1px;\"></span></p>");
+        
         } elseif($currentArgument->getArgumentIsAgree() == 0){
-            print("<p class=\"opposeLabel\">Oppose</p>");
+            print("<p class=\"titleArrowImg\" style=\"color: #ea9999;\"><span style=\"background-color: #F7F7F7;\">is opposed by<img src=\"titleArrow.png\" style=\" height: 11px; position: relative;  top: 1px;\"></span></p>");
         } elseif($currentArgument->getArgumentIsAgree() == 4) {
-            print("<p class=\"neutralLabel\">Neutral</p>");
+            print("<p class=\"titleArrowImg\" style=\"color: #EAC799;\"><span style=\"background-color: #F7F7F7;\">is responded to neutrally by<img src=\"titleArrow.png\" style=\" height: 11px; position: relative;  top: 1px;\"></span></p>");
+        } elseif($currentArgument->getArgumentIsAgree() == 3) {
+            print("<p class=\"titleArrowImg\" style=\"color: #99B6EA;\"><span style=\"background-color: #F7F7F7;\">contains the category<img src=\"titleArrow.png\" style=\" height: 11px; position: relative;  top: 1px;\"></span></p>");
+        } elseif($currentArgument->getArgumentIsAgree() == 2) {
+            print("<p class=\"titleArrowImg\" style=\"color: #EAC799;\"><span style=\"background-color: #F7F7F7;\">contains the discussion<img src=\"titleArrow.png\" style=\" height: 11px; position: relative;  top: 1px;\"></span></p>");
         }
         
         if($currentArgument->getArgumentIsAgree() == 3) {
@@ -905,7 +915,7 @@ if($rId != 0) {
     </p>
     -->
     <p id="howtoLink" style="
-    position: absolute;  top: 5px;  
+    position: absolute;  top: 8px;  
     left: 275px;  cursor: pointer;  color: blue;">
         How-to Guide
     </p>
@@ -918,7 +928,7 @@ if($rId != 0) {
                 </form>");
         }
         else {
-            print ("<p id=\"loginRegisterLink\">Login/Register</p>");
+            print ("<p class=\"loginRegisterLink loginRegisterTop\">Create Account/Sign In</p>");
         }
         outputCategoryContents($rId, array());
     ?>
@@ -943,8 +953,8 @@ if($rId != 0) {
     margin-right: 300px;">
         Text is available under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US">Creative Commons Attribution 3.0 Unported License</a>.
     </p>
-    <p>
-        <a href="mailto:mak364@cornell.edu">Provide Feedback</a>
+     <p id="feedbackLink" style="cursor: pointer;  color: blue;">
+        Provide Feedback
     </p>
 </div>
 

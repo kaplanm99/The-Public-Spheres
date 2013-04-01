@@ -60,7 +60,8 @@ function closeTop()
 	document.getElementById('greyOverlay').style.display='none';
 	document.getElementById('howto').style.display='none';
     document.getElementById('loginRegisterBox').style.display='none';
-	document.getElementById('SearchPreviousResponsesBox').style.display='none';
+	//document.getElementById('SearchPreviousResponsesBox').style.display='none';
+    document.getElementById('feedback').style.display='none';
 }
 
 function showHowTo() {
@@ -80,9 +81,26 @@ function showHowTo() {
 	document.getElementById('howto').style.display='block';
 }
 
+function showFeedback() {
+	var boxWidth = 800;
+	var boxHeight = 465;
+    
+	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
+	var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
+
+	var xPos = (screenWidth - boxWidth) * 0.5;
+	var yPos = (screenHeight - boxHeight) * 0.5;
+
+	document.getElementById('feedback').style.left=xPos+'px';
+	document.getElementById('feedback').style.top=yPos+'px';
+
+	document.getElementById('greyOverlay').style.display='block';
+	document.getElementById('feedback').style.display='block';
+}
+
 function showLoginRegister()
 {
-	var boxWidth = 500;
+	var boxWidth = 840;
 	var boxHeight = 465;
 	
 	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
@@ -206,14 +224,15 @@ $(document).ready(function(){
    attachArrowMouseEvents("yesButton");
    attachArrowMouseEvents("noButton");
    
-   $("#loginRegisterLink").click(showLoginRegister);
+   $(".loginRegisterLink").click(showLoginRegister);
    $("#howtoLink").click(showHowTo);
+   $("#feedbackLink").click(showFeedback);
    
    var circleHeight = 760;
    var statementHeights = new Array();
    
    $(".statement").each(function (index, domEle) {
-        statementHeights[index] = $(domEle).height() + 9;
+        statementHeights[index] = $(domEle).height() + 17;
 	});
    
    $(".circle").each(function (index, domEle) {
