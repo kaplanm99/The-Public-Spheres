@@ -8,6 +8,7 @@
 
 @import "compass/reset";
 @import "compass/css3/border-radius";
+@import "compass/css3/images";
 
 body {
 	font-family: Arial;
@@ -61,9 +62,29 @@ body {
 	background-color:#fffbf3;
 }
 
-.constructiveButton{
-    vertical-align:text-top;
+.constructiveButton{  
+    color: rgb(231, 231, 231);
+    border: 1px solid rgb(83, 83, 83);
+    border-radius: 5px;
+    padding: 1px;
+    font-size: 10px;
+    background: #adadad;
+    @include background-image(linear-gradient(#adadad, #585858));
+    margin-right: 2px;
+    margin-left: 2px;
 }
+
+.yesButtonDepressed{
+    color: rgb(61, 255, 0);
+    background: #adadad;
+    @include background-image(linear-gradient(#585858, #adadad));
+}  
+
+.noButtonDepressed{
+    color: rgb(170, 0, 0);
+    background: #adadad;
+    @include background-image(linear-gradient(#585858, #adadad));
+}  
 
 .constructive{
     padding-top:5px;
@@ -464,8 +485,8 @@ Sizes
 	position:fixed;
 	padding:20px;
 	
-	width: 760px;
-	height: 425px;
+	width: 1060px;
+	height: 725px;
 	
 	z-index: 501;
 	
@@ -475,6 +496,30 @@ Sizes
 }
 
 #howto h1 {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+#demographicSurvey {
+    border:4px solid black;
+	border-radius: 10px;
+	background-color:#f7f7f7;
+	color:#000000;
+	
+	position:fixed;
+	padding:20px;
+	
+	width: 760px;
+	height: 725px;
+	
+	z-index: 501;
+	
+	text-align:center;
+    
+    display:none;
+}
+
+#demographicSurvey h1 {
     font-size: 24px;
     margin-bottom: 12px;
 }
@@ -490,7 +535,7 @@ Sizes
 	padding:20px;
 	
 	width: 760px;
-	height: 425px;
+	height: 725px;
 	
 	z-index: 501;
 	

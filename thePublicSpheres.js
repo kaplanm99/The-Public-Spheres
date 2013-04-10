@@ -59,14 +59,29 @@ function closeTop()
 {
 	document.getElementById('greyOverlay').style.display='none';
 	document.getElementById('howto').style.display='none';
-    document.getElementById('loginRegisterBox').style.display='none';
-	//document.getElementById('SearchPreviousResponsesBox').style.display='none';
+    document.getElementById('loginRegisterBox').style.display='none';	
     document.getElementById('feedback').style.display='none';
+    document.getElementById('demographicSurvey').style.display='none';
+    document.getElementById('SearchPreviousResponsesBox').style.display='none';    
+}
+
+function showDemographicSurvey() {
+	var boxWidth = 800;
+    
+	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
+	
+	var xPos = (screenWidth - boxWidth) * 0.5;
+	
+	document.getElementById('demographicSurvey').style.left=xPos+'px';
+	document.getElementById('demographicSurvey').style.top='0px';
+
+	document.getElementById('greyOverlay').style.display='block';
+	document.getElementById('demographicSurvey').style.display='block';
 }
 
 function showHowTo() {
-	var boxWidth = 800;
-	var boxHeight = 465;
+	var boxWidth = 1100;
+	var boxHeight = 765;
     
 	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
 	var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
@@ -83,16 +98,13 @@ function showHowTo() {
 
 function showFeedback() {
 	var boxWidth = 800;
-	var boxHeight = 465;
     
 	var screenWidth=document.all?document.body.clientWidth:window.innerWidth;
-	var screenHeight=document.all?document.body.clientHeight:window.innerHeight;
-
+	
 	var xPos = (screenWidth - boxWidth) * 0.5;
-	var yPos = (screenHeight - boxHeight) * 0.5;
-
+	
 	document.getElementById('feedback').style.left=xPos+'px';
-	document.getElementById('feedback').style.top=yPos+'px';
+	document.getElementById('feedback').style.top='0px';
 
 	document.getElementById('greyOverlay').style.display='block';
 	document.getElementById('feedback').style.display='block';
@@ -206,7 +218,7 @@ $(document).ready(function(){
      if(subpointCount < 6) {
          subpointCount++;
          $("#textAreas").append('<span class="textboxLine"></span><textarea name="rText[]" class="textbox textboxSize"></textarea>');
-         var tempWidth = ($("#innerCircle>.circleresponsessize").innerWidth()-(subpointCount*25))/subpointCount;
+         var tempWidth = ($("#innerCircle>.circleResponsesSize").innerWidth()-(subpointCount*25))/subpointCount;
          
          if(tempWidth > 480) {
             tempWidth = 480;
@@ -214,7 +226,7 @@ $(document).ready(function(){
          
          $("#textAreas").width( (tempWidth+25)*subpointCount );
          
-         $(".textboxsize").width(tempWidth);
+         $(".textboxSize").width(tempWidth);
      }
    });
    

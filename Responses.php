@@ -224,29 +224,27 @@ class Responses {
                 <input type=\"hidden\" id=\"rPID\" name=\"rPID\" value=\"".$this->respID."\" />
                 <input type=\"hidden\" id=\"rID\" name=\"rID\" value=\"".$response->getResponseID()."\" />
                 <input type=\"hidden\" class=\"vote\" name=\"vote\" value=\"-1\" />
-                <p>
-                    Is this argument constructive?");
-                    
+                <p>");
+            
+                print("<span class=\"constructiveButton ");
                 if($response->getResponseVote() == 1){
-                    print("<img src=\"yesButtonDepressed.png\" class=\"constructiveButton yesButtonDepressed\" ");
+                    print("yesButtonDepressed");
+                }else {
+                    print("yesButton");
                 }
-                else {
-                    print("<img src=\"yesButton.png\" class=\"constructiveButton yesButton\" ");
-                }
-
-                print("onclick=\"submitVote(".$response->getResponseID().", 1);\" />(".$response->getResponseYesVotes().")");
-                    
+                print("\" onclick=\"submitVote(".$response->getResponseID().", 1);\" >Constructive</span>(".$response->getResponseYesVotes().")");
+            
+                print("<span class=\"constructiveButton ");
                 if($response->getResponseVote() == 0){
-                    print("<img src=\"noButtonDepressed.png\" class=\"constructiveButton noButtonDepressed\" ");
+                    print("noButtonDepressed");
+                }else {
+                    print("noButton");
                 }
-                else {
-                    print("<img src=\"noButton.png\" class=\"constructiveButton noButton\" ");
-                }
-                    
-                print("onclick=\"submitVote(".$response->getResponseID().", 0);\" />(".$response->getResponseNoVotes().")
-                </p>
-            </form>
-            </div>");           
+                print("\" onclick=\"submitVote(".$response->getResponseID().", 0);\" >Not Constructive</span>(".$response->getResponseNoVotes().")");
+                
+                print("</p>
+                       </form>
+                       </div>");
             
             if($this->typeIsAgree == 0 || $this->typeIsAgree == 1 || $this->typeIsAgree == 2 || $this->typeIsAgree == 4) {
                 $ratio = $this->agreeDisagreeRatio($response->getResponseID());

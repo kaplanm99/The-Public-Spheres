@@ -190,6 +190,6 @@ function manage_user() {
     $stmt->close();
     $db->close();
 
-    return "$what\n";
+    return $what;
 }
 ?>

@@ -70,8 +70,6 @@
             die();
         }
         
-
-
         
         //$mysqli = new mysqli($host, $username, $password, $db);
         /*
@@ -81,7 +79,7 @@
 
         $prepareText = $prepareText . " ) GROUP BY i1.`responseId` ORDER BY SUM(i1.tf * (1/i2.df)) DESC LIMIT 10) s WHERE r.responseId = s.responseId;";
         */
-        
+        /*
         $prepareText = "SELECT r.responseText FROM Responses r, (SELECT i1.responseId FROM `InvertedIndex` i1, (SELECT stemText, COUNT(stemText) AS df FROM `InvertedIndex` GROUP BY stemText) i2 WHERE i1.stemText = i2.stemText AND ( i1.stemText = 'health' OR i1.stemText = 'care' ) GROUP BY i1.`responseId` ORDER BY SUM(i1.tf * (1/i2.df)) DESC LIMIT 10) s WHERE r.responseId = s.responseId;";
         
         if ($stmt = $mysqli->prepare($prepareText)) {
@@ -100,7 +98,7 @@
         }
         
         $mysqli->close();
-        
+        */
     }
 
     /*

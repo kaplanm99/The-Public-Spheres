@@ -2,6 +2,39 @@
 /* Copyright (c) 2012 Michael Andrew Kaplan
  * See the file license.txt for copying permission. */
 
+function retrievePostVar($varName) {
+    $postVar = "";
+    
+    if( isset($_POST[$varName]) ) {
+        $postVar = strip_tags($_POST[$varName]);
+        $postVar = trim($postVar);
+    }
+    
+    return $postVar;
+} 
+
+function ancestorString($arr) {
+    if(count($arr) == 0) {
+        return "&aIds[]=0";
+    }
+    
+    return ancestorStringNonZero($arr);
+}
+
+function ancestorStringNonZero($arr) {
+    $jsArr = "";
+
+    foreach ($arr as $val) {
+        $jsArr = $jsArr . "&aIds[]=" . $val;
+    }
+    
+    return $jsArr;
+}
+ 
+if(isset($_GET["aIds"])) {
+    $aIds = $_GET["aIds"];
+}            
+ 
 require('InvertedIndex.php');                 
  
 if(isset($_POST["op"]) && $_POST["op"] == "logout" && isset($_SESSION['user'])) {
@@ -9,8 +42,13 @@ if(isset($_POST["op"]) && $_POST["op"] == "logout" && isset($_SESSION['user'])) 
 }
  
 require('user-man.php'); 
-
 $manage_user_result = manage_user();
+
+require('insertFeedback.php');
+insertFeedback();
+
+require('insertDemographicSurvey.php');
+insertDemographicSurvey();
 
 function insertResponse($text, $userName) {
     // Insert into Responses only if it doesn't exist when searched for. Write a subfunction that first searches for it and if it doesn't exist in Responses then inserts it into responses. It should either return the existing id or the insert_id.
@@ -101,8 +139,8 @@ if(isset($_POST["rID"])&&isset($_POST["vote"])&&isset($_POST["rPID"]) && isset($
         if(!$sameVote) {
             
             if(!$hasVote) {
-                if ($stmt = $mysqli->prepare("INSERT INTO Votes (responseId, parentId, user, vote) VALUES (?,?,?,?);")) {
-                    $stmt->bind_param('iisi', $rID, $rIdOuter, $_SESSION['user'],  $vote);
+                if ($stmt = $mysqli->prepare("INSERT INTO Votes (responseId, parentId, user, vote, aIds) VALUES (?,?,?,?,?);")) {
+                    $stmt->bind_param('iisis', $rID, $rIdOuter, $_SESSION['user'],  $vote, ancestorStringNonZero($aIds));
                 
                     if($stmt->execute()) {
                         $stmt->close();
@@ -201,8 +239,8 @@ if(isset($_POST["rText"])&&isset($_POST["rIsAgree"])&&isset($_POST["rPID"]) && i
                 $newRID = insertResponse($temp_subpointText, $_SESSION['user']);
                 
                 if ($newRID != -1){
-                    if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user) VALUES (?,?,?,?);")) {
-                        $stmt->bind_param('iiis', $newRID, $rIsAgree, $rIdOuter, $_SESSION['user']);
+                    if ($stmt = $mysqli->prepare("INSERT INTO Context (responseId, isAgree, parentId, user, aIds) VALUES (?,?,?,?,?);")) {
+                        $stmt->bind_param('iiiss', $newRID, $rIsAgree, $rIdOuter, $_SESSION['user'], ancestorStringNonZero($aIds));
                         
                         $stmt->execute();
                     }
@@ -272,24 +310,6 @@ function responseExists($responseId) {
     $mysqli->close();
     
     return $exists;
-}
-
-function ancestorString($arr) {
-    if(count($arr) == 0) {
-        return "&aIds[]=0";
-    }
-    
-    return ancestorStringNonZero($arr);
-}
-
-function ancestorStringNonZero($arr) {
-    $jsArr = "";
-
-    foreach ($arr as $val) {
-        $jsArr = $jsArr . "&aIds[]=" . $val;
-    }
-    
-    return $jsArr;
 }
 
 function outputForm($respID, $aIds, $button1Text, $button2Text) {
@@ -531,14 +551,10 @@ if(isset($_GET["rId"])) {
 require('CurrentArgument.php');
 $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
 ?>
-
+<!DOCTYPE html>
 <html>
 <head> 
     <link href="styles/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
-    <link href="styles/stylesheets/print.css" media="print" rel="stylesheet" type="text/css" />
-    <!--[if IE]>
-        <link href="styles/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
-    <![endif]-->
     
     <title>The Public Spheres</title>    
     <script src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
@@ -557,6 +573,8 @@ $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
     <div>
         <h1>How-to Guide</h1>
         <p>
+        Please map out all constructive arguments, not only the arguments that you personally agree with.<br/><br/>
+        <iframe width="420" height="315" src="http://www.youtube.com/embed/kyUJjrRcxDY" frameborder="0" allowfullscreen></iframe><br/><br/>       
         This web application is intended to be a resource for fully mapped out arguments so that people can learn about, contribute to, and participate in arguments in areas that interest them in a deep and detailed manner. Users can contribute, organize, and vote on arguments for their own benefit and for the benefit of others.
         <br/><br/>
         The interface can be navigated by clicking on the large or small rectangles to open up that level of argument. 
@@ -567,7 +585,7 @@ $currentArgument = new CurrentArgument($rId, $aIds[count($aIds)-1]);
         <br/><br/>
         Add an argument by entering text in the text box at the bottom of the interface and clicking the relevant button. If you see a previous argument that is equivalent to the argument that you are typing, click on that argument to use it instead. Using the existing response in the new context to prevent having a redundant critique of that response when the critique has already been made on the argument elsewhere.
         <br/><br/>
-        You can provide feedback on whether an argument is constructive or not by pressing the Yes or No button below each argument. When you vote, the page will refresh and the button that you clicked will be colored to indicate your vote. You can undo a vote by clicking again on the triangle you previously clicked.
+        You can provide feedback on whether an argument is constructive or not by pressing a button below each argument. When you vote, the page will refresh and the button that you clicked will be colored to indicate your vote. You can undo a vote by clicking again on the triangle you previously clicked.
         <br/><br/>
         Please break your arguments down into subpoints by clicking on the Add another subpoint button for each subpoint and typing a subpoint in each textbox.
         </p>
@@ -639,12 +657,53 @@ By clicking the button below I agree that I am over 18, have read the consent fo
     
 </div>
 
+<?php
+    require('demographicSurvey.php');
+?>
+
 <div id="feedback">
     <p>
 	<img src="closeButton2.png" class="closeButton" />
 	</p>
-    <div>
+    <div style="text-align:left">
+        <h2>Feedback</h2>
+        <p><br/><br/>Feel free to answer one or more of the following questions<br/><br/></p>
+
+        <?php
+            print("<form action=\"index.php?rId=$rId".ancestorStringNonZero($aIds)."\" method=\"post\">");
+        ?>
+
+        Is this an interesting product? Why or why not?<br/>
+        <textarea name="feedbackInteresting" rows="3" cols="80"></textarea><br/>
+
+        What do you like the best about this interface?<br/>
+        <textarea name="feedbackBest" rows="3" cols="80"></textarea><br/>
+
+        What do you like the least about this interface?<br/>
+        <textarea name="feedbackLeast" rows="3" cols="80"></textarea><br/>
+
+        What would you change about this interface?<br/>
+        <textarea name="feedbackChange" rows="3" cols="80"></textarea><br/>
+
+        Would you continue to use it ? Why or why not?<br/>
+        <textarea name="feedbackContinue" rows="3" cols="80"></textarea><br/>
+
+        Would you recommend it to others? Why or why not?<br/>
+        <textarea name="feedbackRecommend" rows="3" cols="80"></textarea><br/>
+
+        Please choose the answer that mostly closely matches your opinion on the statement:<br/> 
+        "Health Care is a Human Right"<br/>
+        <input name="feedbackLikertHealth" type="radio" value="1" /> Strongly Agree<br/>
+        <input name="feedbackLikertHealth" type="radio" value="2" /> Mildly Agree<br/>
+        <input name="feedbackLikertHealth" type="radio" value="3" /> Undecided<br/>
+        <input name="feedbackLikertHealth" type="radio" value="4" /> Mildly Disagree<br/>
+        <input name="feedbackLikertHealth" type="radio" value="5" /> Strongly Disagree<br/>
+
+        Please explain your opinion on whether Health Care is a Human Right<br/>
+        <textarea name="feedbackOpinionHealth" rows="3" cols="80"></textarea><br/>
         
+        <input type="submit" value="Submit">
+        </form>
     </div>
 </div>
 
