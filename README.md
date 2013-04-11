@@ -3,6 +3,8 @@ The-Public-Spheres
 
 A web application designed for many to many debates
 
+Open Source MIT Licensed
+
 Demo: http://thepublicspheres.com/
 
 Setup:
